@@ -1,0 +1,63 @@
+header {
+    display: grid;
+    grid-template-columns: 5% auto;
+    justify-items: stretch;
+    align-items: center;
+    background-color: #e6e6e6;
+}
+
+@media(max-width: 1024px) {
+    header {
+        grid-template-columns: 2% 10% 10% 10% auto 2%;
+    }
+}
+
+.navbar-item {
+    cursor: pointer;    
+}
+
+.selected {
+    background-color: rgb(199, 198, 198);
+}
+
+.navbar-item:hover {
+    color: darkgray;
+}
+
+.selected.navbar-item:hover {
+    color: black;
+}
+
+.navbar-brand {
+    margin-left: 5px;
+    grid-column: 1;
+}
+
+.login-button {
+    grid-column: 2;
+    text-align: end;
+    margin-right: 5px;
+}
+
+.authorized-user {
+    display: flex;
+    grid-column: 3;
+    justify-content: space-between;
+    margin-right: 5px;
+}
+
+.unauthorized-user {
+    display: grid;
+    grid-column: 2;
+    justify-items: stretch;
+    margin-right: 5px;
+}
+
+.connection-text {
+    text-align: center;
+    color: red;
+}
+
+.user-name {
+    padding-right: 1em;
+}

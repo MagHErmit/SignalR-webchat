@@ -1,0 +1,135 @@
+.message-list {
+    display: grid;
+    align-content: end;
+    overflow-y: auto;
+}
+
+.message {
+    background-color: whitesmoke;
+    filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.36));
+    padding: 1em 1.5em;
+    border-radius: 3px;
+    max-width: 26vh;
+    word-break: break-word;
+}
+
+.my-message {
+    justify-self: end;    
+}
+
+.my-message::before {
+    content: '';
+    position: absolute;
+    visibility: visible;
+    bottom: 0px;
+    right: -11px;
+    border: 10px solid transparent;
+    border-bottom: 10px solid #ccc;
+  }
+  
+  .my-message::after {
+    content: '';
+    position: absolute;
+    visibility: visible;
+    bottom: 0px;
+    right: -10px;
+    border: 10px solid transparent;
+    border-bottom: 10px solid whitesmoke;
+  }
+
+  .another-message::before {
+    content: '';
+    position: absolute;
+    visibility: visible;
+    bottom: 0px;
+    left: -11px;
+    border: 10px solid transparent;
+    border-bottom: 10px solid #ccc;
+  }
+  
+  .another-message::after {
+    content: '';
+    position: absolute;
+    visibility: visible;
+    bottom: 0px;
+    left: -10px;
+    border: 10px solid transparent;
+    border-bottom: 10px solid whitesmoke;
+    clear: both;
+  }
+
+.another-message {
+    justify-self: start;
+}
+
+.user-logo {
+    padding: 0.5em;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    height: 25px;
+    width: 25px;
+    align-self: end;
+    font-weight: bold;
+    color: white;
+}
+
+.user-logo-my {
+    justify-self: end;
+}
+
+.user-logo-another {
+    justify-self: start;
+}
+
+.message-row {
+    padding: 0.5em;
+    display: grid;
+    animation: showing 1s;
+}
+
+@keyframes showing {
+    0% {
+        transform: scale(0.0, 0.0)
+    }
+    50% {
+    transform: scale(1.0, 1.0);
+    }
+}
+
+.message-row-my {
+    grid-template-columns: 97% 3%;
+}
+
+.message-row-another {
+    grid-template-columns: 3% 97%;
+}
+
+.chat-container {
+    /* background-color: #e7eff9;
+    background-image: linear-gradient(315deg, #e7eff9 0%, #cfd6e6 74%); */
+    background-color: #d9d9d9;
+    background-image: linear-gradient(315deg, #d9d9d9 0%, #f6f2f2 74%);
+
+    border-left: 1px solid darkgray;
+    border-right: 1px solid darkgray;
+    display: grid;
+    grid-template-rows: 20fr 1fr;
+    height: calc(100vh - 53px);
+}
+
+.input-block {
+    display: grid;
+}
+
+.input-block > textarea {
+    display: block;
+    resize: none;
+    border: 1px solid black;
+    min-height: 10px;
+    font-size: 16px;
+    padding: 1em;
+    outline: none;
+}
