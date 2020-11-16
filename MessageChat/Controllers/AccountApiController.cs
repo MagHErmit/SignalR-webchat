@@ -16,10 +16,10 @@ namespace MessageChat.Controllers
     public class AccountApiController : ControllerBase
     {
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginInDto loginData)
+        public async Task<object> Login([FromBody] LoginInDto loginData)
         {
-            if (string.IsNullOrWhiteSpace(loginData.Name) || loginData.Name.Length < 4 || loginData.Name.Length > 20)
-                return BadRequest("Введен некорректный логин");
+            if (loginData.Name == null || loginData.Name.Length < 4 || loginData.Name.Length > 20)
+                return new { };
 
             var claims = new []
             {
@@ -35,11 +35,11 @@ namespace MessageChat.Controllers
                 ExpiresUtc = DateTime.UtcNow.Add(TimeSpan.FromHours(24))
             });
 
-            return new ObjectResult( new 
+            return new
             {
                 name = loginData.Name,
                 identificator = claims[0].Value
-            });
+            };
         }
 
         [HttpPost("logout"), Authorize]

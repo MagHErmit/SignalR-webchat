@@ -33,6 +33,7 @@ class SignalRManager {
     public isDisconnected() {
         return this.connection.state === SignalR.HubConnectionState.Disconnected
     }
+
 }
 
 export default SignalRManager
