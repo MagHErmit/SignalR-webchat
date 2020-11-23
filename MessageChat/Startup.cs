@@ -8,13 +8,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MessageChat.DataRepositories;
 using MessageChat.AuthorizedAccountRepository;
+using Microsoft.Extensions.Configuration;
 
 namespace MessageChat
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ConnectionSetting>(Configuration.GetSection("ConnectionStrings"));
             services.AddSingleton<MessageHub>();
             services.AddSingleton<IAuthorizedUsersRepository, AuthorizedUsers>();
             services.AddSingleton<IAccountRepository, AccountRepository>();

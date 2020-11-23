@@ -1,4 +1,5 @@
 ﻿using MessageChat.DomainModels;
+using Microsoft.Extensions.Options;
 using System;
 using System.Data.SqlClient;
 
@@ -6,12 +7,17 @@ namespace MessageChat.DataRepositories
 {
     public class AccountRepository : IAccountRepository
     {
+        private readonly string _connectionString;
+
+        public AccountRepository(IOptions<ConnectionSetting> conn)
+        {
+            _connectionString = conn.Value.DefaultConnection;
+        }
         public UserModel GetUser(string userName)
         {
             // TODO: Добавить обработку ошибок
-            string connectionString = "Data Source=localhost;Initial Catalog=kakurin_webchat;Integrated Security=True";
             string sqlExpression = "sp_GetUserCreditals";
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(_connectionString);
             
             connection.Open();
             SqlCommand command = new SqlCommand(sqlExpression, connection);
@@ -36,9 +42,8 @@ namespace MessageChat.DataRepositories
 
         public bool RegisterUser(UserModel user)
         {
-            string connectionString = "Data Source=localhost;Initial Catalog=kakurin_webchat;Integrated Security=True";
             string sqlExpression = "sp_RegisterUser";
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(_connectionString);
 
             connection.Open();
             SqlCommand command = new SqlCommand(sqlExpression, connection);
