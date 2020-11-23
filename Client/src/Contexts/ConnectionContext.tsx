@@ -21,13 +21,14 @@ export const ConnectionContextProvider: React.FC = ({children}) => {
 
     const [status, setStatus] = useState(ConnectionStatus.None)
     const { currentUserName } = useContext(AccountContext)
-
+    const timerId = useRef<NodeJS.Timeout>()
     const stopConnection = () => {
+        clearInterval(timerId.current as NodeJS.Timeout)
         SignalRManager.instance.stop()
         setStatus(ConnectionStatus.None)
     }
 
-    const timerId = useRef<NodeJS.Timeout>()
+    
 
     const startConnection = () => {
         timerId.current = setInterval(() => {

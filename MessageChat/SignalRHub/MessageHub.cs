@@ -6,6 +6,7 @@ using MessageChat.AccountRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Data.SqlClient;
 
 namespace MessageChat.SignalR
 {
@@ -23,6 +24,32 @@ namespace MessageChat.SignalR
         {
             if(!string.IsNullOrEmpty(Context.UserIdentifier))
                 _usersIdentificators.AddUser(Context.UserIdentifier);
+            /*
+            string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=kakurin_webchat;Integrated Security=True";
+            string sqlExpression = "sp_GetUsers";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                // указываем, что команда представляет хранимую процедуру
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                var reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    Console.WriteLine("{0}\t{1}\t{2}", reader.GetName(0), reader.GetName(1), reader.GetName(2), reader.GetName(3));
+
+                    while (reader.Read())
+                    {
+                        string id = reader.GetString(0);
+                        string name = reader.GetString(1);
+                        int age = reader.GetInt32(2);
+                        Console.WriteLine("{0} \t{1} \t{2}", id, name, age);
+                    }
+                }
+                reader.Close();
+            }
+            */
             return Task.CompletedTask;
         }
 
