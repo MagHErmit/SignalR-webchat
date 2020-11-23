@@ -8,6 +8,7 @@ namespace MessageChat.DataRepositories
     {
         public UserModel GetUser(string userName)
         {
+            // TODO: Добавить обработку ошибок
             string connectionString = "Data Source=localhost;Initial Catalog=kakurin_webchat;Integrated Security=True";
             string sqlExpression = "sp_GetUserCreditals";
             using SqlConnection connection = new SqlConnection(connectionString);
@@ -35,7 +36,51 @@ namespace MessageChat.DataRepositories
 
         public bool RegisterUser(UserModel user)
         {
-            throw new NotImplementedException();
+            string connectionString = "Data Source=localhost;Initial Catalog=kakurin_webchat;Integrated Security=True";
+            string sqlExpression = "sp_RegisterUser";
+            using SqlConnection connection = new SqlConnection(connectionString);
+
+            connection.Open();
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            SqlParameter idParam = new SqlParameter
+            {
+                ParameterName = "@id",
+                Value = user.Id
+            };
+            command.Parameters.Add(idParam);
+
+            SqlParameter nameParam = new SqlParameter
+            {
+                ParameterName = "@name",
+                Value = user.Name
+            };
+            command.Parameters.Add(nameParam);
+
+            SqlParameter emailParam = new SqlParameter
+            {
+                ParameterName = "@email",
+                Value = user.Email
+            };
+            command.Parameters.Add(emailParam);
+
+            SqlParameter passwordParam = new SqlParameter
+            {
+                ParameterName = "@password",
+                Value = user.Password
+            };
+            command.Parameters.Add(passwordParam);
+
+            SqlParameter createdParam = new SqlParameter
+            {
+                ParameterName = "@created",
+                Value = DateTime.Now
+            };
+
+            command.Parameters.Add(createdParam);
+            var res = command.ExecuteNonQuery();
+            return res > 0 ? true : false;
         }
     }
 }

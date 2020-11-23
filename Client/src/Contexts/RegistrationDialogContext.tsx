@@ -1,23 +1,25 @@
 import React, { useContext, useState, useRef } from 'react'
 import { TextField, Button } from '@material-ui/core'
 import '../styles/LoginDialog.css'
-import { AccountContext, LoginModel } from './AccountContext'
+import { AccountContext, RegistrationModel } from './AccountContext'
 import md5 from 'md5'
 
-interface ILoginDialogContext {
-    setIsLoginDialogOpen: (dialogOpen: boolean) => void
+
+interface IRegistrationDialogContext {
+    setIsRegistrationDialogOpen: (dialogOpen: boolean) => void
 }
 
-export const LoginDialogContext = React.createContext<ILoginDialogContext>({
-    setIsLoginDialogOpen: (dialogOpen: boolean) => {
+export const RegistrationDialogContext = React.createContext<IRegistrationDialogContext>({
+    setIsRegistrationDialogOpen: (dialogOpen: boolean) => {
         throw new Error('Не проинициализирован контект диалога')
     }
 })
 
-export const LogingDialogContextProvder: React.FC = ({ children }) => {
-    const { login } = useContext(AccountContext)
+export const RegistrationDialogContextProvider: React.FC = ({ children }) => {
+    const { registration } = useContext(AccountContext)
     const dialogRef = useRef<HTMLDialogElement>(null)
     const inputLoginRef = useRef<HTMLInputElement>(null)
+    const inputEmailRef = useRef<HTMLInputElement>(null)
     const inputPasswordRef = useRef<HTMLInputElement>(null)
     const [color, setColor] = useState<"secondary" | "primary" | undefined>("primary")
     const [text, setText] = useState('')
@@ -28,8 +30,8 @@ export const LogingDialogContextProvder: React.FC = ({ children }) => {
         setText(text)
     }
 
-    const setIsLoginDialogOpen = (isDialogOpen: boolean) => {
-        if (!inputLoginRef.current || !dialogRef.current || !inputPasswordRef.current)
+    const setIsRegistrationDialogOpen = (isDialogOpen: boolean) => {
+        if (!inputLoginRef.current || !dialogRef.current)
             return
 
         if (isDialogOpen) {
@@ -41,7 +43,7 @@ export const LogingDialogContextProvder: React.FC = ({ children }) => {
         setError("primary", '')
     }
     
-    const loginInternal = async () => {
+    const registrationInternal = async () => {
         
         if (!inputLoginRef.current || !dialogRef.current)
             return
@@ -52,13 +54,13 @@ export const LogingDialogContextProvder: React.FC = ({ children }) => {
         }
 
         setStateLogin(true)
-        let loginRes = false
-        if(inputPasswordRef.current) {
-            let log: LoginModel = {name: res[0], password: md5(inputPasswordRef.current.value)}
-            loginRes = await login(log)
+        let RegistrationRes: any
+        if(inputEmailRef.current && inputPasswordRef.current) {
+            let reg: RegistrationModel = {name: res[0], email: inputEmailRef.current.value, password: md5(inputPasswordRef.current.value)}
+            RegistrationRes = await registration(reg)
         }
         setStateLogin(false)
-        if(loginRes)
+        if(RegistrationRes)
             dialogRef.current.close()
         else {
             setStateLogin(false)
@@ -67,30 +69,34 @@ export const LogingDialogContextProvder: React.FC = ({ children }) => {
     }
 
     return (
-        <LoginDialogContext.Provider value={{ setIsLoginDialogOpen }}>
+        <RegistrationDialogContext.Provider value={{ setIsRegistrationDialogOpen }}>
             <dialog ref={dialogRef} className='login-dialog'>
                 <div className='login-dialog-header'>
-                    <span className='login-dialog-header-text'>Авторизация</span>                    
+                    <span className='login-dialog-header-text'>Регистрация</span>                    
                 </div>
                 <div className='login-dialog-body'>
-                    <TextField disabled={disableLogin} onKeyDown={(e) => {setError("primary",''); if (e.key === 'Enter') loginInternal() }}  inputRef={inputLoginRef} label='Введите логин' fullWidth color={color}/>
+                    <TextField disabled={disableLogin} onKeyDown={(e) => {setError("primary",''); if (e.key === 'Enter') registrationInternal() }}  inputRef={inputLoginRef} label='Введите логин' fullWidth color={color}/>
                     <label style={{color: 'red'}}></label>
                 </div>
                 <div className='login-dialog-body'>
-                    <TextField disabled={disableLogin} type='password' onKeyDown={(e) => {setError("primary",''); if (e.key === 'Enter') loginInternal() }}  inputRef={inputPasswordRef} label='Введите пароль' fullWidth color={color}/>
+                    <TextField disabled={disableLogin} onKeyDown={(e) => {setError("primary",''); if (e.key === 'Enter') registrationInternal() }}  inputRef={inputEmailRef} label='Введите email' fullWidth color={color}/>
+                    <label style={{color: 'red'}}></label>
+                </div>
+                <div className='login-dialog-body'>
+                    <TextField disabled={disableLogin} type='password' onKeyDown={(e) => {setError("primary",''); if (e.key === 'Enter') registrationInternal() }}  inputRef={inputPasswordRef} label='Введите пароль' fullWidth color={color}/>
                     <label style={{color: 'red'}}>{text}</label>
                 </div>
                 <div className='login-dialog-footer'>
-                    <Button onClick={() => setIsLoginDialogOpen(false)} className='login-dialog-close-button' color="primary">
+                    <Button onClick={() => setIsRegistrationDialogOpen(false)} className='login-dialog-close-button' color="primary">
                         Закрыть
                     </Button>
-                    <Button disabled={disableLogin} onClick={() => loginInternal()} className='login-dialog-send-button' color="primary">
-                        Вход
+                    <Button disabled={disableLogin} onClick={() => registrationInternal()} className='login-dialog-send-button' color="primary">
+                        Регистрация
                     </Button>
                 </div>
             </dialog>
             {children}
-        </LoginDialogContext.Provider>
+        </RegistrationDialogContext.Provider>
     )
 }
 

@@ -13,19 +13,17 @@ namespace MessageChat.SignalR
     public class MessageHub : Hub
     {
         private readonly IAuthorizedUsersRepository _usersIdentificators;
-        private readonly IAccountRepository _users;
+       
 
-        public MessageHub(IAuthorizedUsersRepository list, IAccountRepository users)
+        public MessageHub(IAuthorizedUsersRepository list)
         {
             _usersIdentificators = list;
-            _users = users;
         }
 
         public override Task OnConnectedAsync()
         {
             if(!string.IsNullOrEmpty(Context.UserIdentifier))
                 _usersIdentificators.AddUser(Context.UserIdentifier);
-            var user = _users.GetUser(Context.User.Claims.ToList()[1].Value);
             return Task.CompletedTask;
         }
 

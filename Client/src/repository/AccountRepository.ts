@@ -1,13 +1,15 @@
+import { RegistrationModel, LoginModel } from '../Contexts/AccountContext'
+
 
 class AccountRepository {
-    public login(name: string): Promise<Response> {
+    public login(user: LoginModel): Promise<Response> {
         return fetch('https://localhost:5001/account/login', {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name })
+            body: JSON.stringify({ name:user.name, password:user.password })
         })
     }
 
@@ -18,6 +20,17 @@ class AccountRepository {
             headers: {
                 'Content-Type': 'application/json'
             }
+        })
+    }
+
+    public registration(user: RegistrationModel): Promise<Response> {
+        return fetch('https://localhost:5001/account/registration', {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({name: user.name, email:user.email, password:user.password})
         })
     }
 }

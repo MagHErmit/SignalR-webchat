@@ -52,7 +52,6 @@ namespace MessageChat
             app.UseAuthentication();
             app.UseAuthorization();
             
-
             app.UseCors(builder =>
             {
                 builder.AllowAnyHeader()

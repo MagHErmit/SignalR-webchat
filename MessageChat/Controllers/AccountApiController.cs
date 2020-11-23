@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MessageChat.DataRepositories;
+using MessageChat.DomainModels;
 using MessageChat.Dto;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,15 +14,25 @@ namespace MessageChat.Controllers
     [Route("account")]
     public class AccountApiController : ControllerBase
     {
+        private readonly IAccountRepository _users;
+
+        public AccountApiController(IAccountRepository users)
+        {
+            _users = users;
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginInDto loginData)
         {
             if (string.IsNullOrWhiteSpace(loginData.Name) || loginData.Name.Length < 4 || loginData.Name.Length > 20)
                 return BadRequest("Введен некорректный логин");
-
+            
+            var user = _users.GetUser(loginData.Name);
+            if (user.Password != loginData.Password)
+                return Unauthorized("Неверный пароль");
             var claims = new []
             {
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, loginData.Name), 
             };
 
@@ -37,6 +49,16 @@ namespace MessageChat.Controllers
                 name = loginData.Name,
                 identificator = claims[0].Value
             });
+        }
+
+        [HttpPost("registration")]
+        public async Task<IActionResult> Registration([FromBody] RegistrationDto regData)
+        {
+            if (string.IsNullOrWhiteSpace(regData.Name) || regData.Name.Length < 4 || regData.Name.Length > 20)
+                return BadRequest("Введенно некорректное имя пользователя");
+
+            _users.RegisterUser(new UserModel(Guid.NewGuid().ToString(), regData));
+            return new EmptyResult();
         }
 
         [HttpPost("logout"), Authorize]

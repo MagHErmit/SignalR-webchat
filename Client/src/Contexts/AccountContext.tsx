@@ -3,14 +3,27 @@ import accountRepository from '../repository/AccountRepository'
 interface IAccountContext {
     currentUserName: string,
     currentUserIdentificator:string,
-    login: (name: string) => Promise<boolean>,
+    login: (user: LoginModel) => Promise<boolean>,
+    registration: (user: RegistrationModel) => Promise<boolean>,
     logout: () => void
+}
+
+export type LoginModel = {
+    name: string,
+    password: string
+}
+
+export type RegistrationModel = LoginModel & {
+    email: string
 }
 
 export const AccountContext = React.createContext<IAccountContext>({
     currentUserName: '',
-    currentUserIdentificator: '', 
-    login: (name: string) => {
+    currentUserIdentificator: '',
+    registration: (user: RegistrationModel) => {
+        throw Error('Не проинициализирован контекст авторизации')
+    },
+    login: (user: LoginModel) => {
         throw Error('Не проинициализирован контекст авторизации')
     },
     logout: () => {
@@ -24,10 +37,10 @@ export const AccountContextProvider: React.FC = ({ children }) => {
     const [currentUserName, setUserName] = useState(savedUserName === null ? '' : savedUserName)
     const [currentUserIdentificator, setUserIdentificator] = useState(savedUserIdentificator === null ? '' : savedUserIdentificator)
 
-    const login = async (userName: string) => {
+    const login = async (user: LoginModel) => {
         let response: any
         try {
-            response = await accountRepository.login(userName).catch()
+            response = await accountRepository.login(user).catch()
         }
         catch {
             return false
@@ -54,8 +67,25 @@ export const AccountContextProvider: React.FC = ({ children }) => {
         await accountRepository.logout()
     }
 
+    const registration = async (user: RegistrationModel) => {
+        let response: any
+        try {
+            response = await accountRepository.registration(user).catch()
+        }
+        catch {
+            return false
+        }
+        if (response.status === 200) {
+            
+        }
+        else {
+            return false
+        }
+        return true
+    }
+
     return (
-        <AccountContext.Provider value={{currentUserName, currentUserIdentificator, login, logout}}>
+        <AccountContext.Provider value={{currentUserName, currentUserIdentificator, registration, login, logout}}>
             {children}
         </AccountContext.Provider>
     )

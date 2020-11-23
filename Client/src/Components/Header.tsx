@@ -3,10 +3,12 @@ import { LoginDialogContext } from '../Contexts/LoginDialogContext'
 import '../styles/Header.css'
 import { AccountContext } from '../Contexts/AccountContext'
 import { ConnectionContext, ConnectionStatus } from '../Contexts/ConnectionContext'
+import { RegistrationDialogContext } from '../Contexts/RegistrationDialogContext'
 
 const Header: React.FC = () => {
     const { currentUserName, logout } = useContext(AccountContext)
-    const { setIsDialogOpen } = useContext(LoginDialogContext)
+    const { setIsLoginDialogOpen } = useContext(LoginDialogContext)
+    const { setIsRegistrationDialogOpen } = useContext(RegistrationDialogContext)
     const { status } = useContext(ConnectionContext)
     const [message, setMessage] = useState('')
 
@@ -33,7 +35,8 @@ const Header: React.FC = () => {
             return (
                 <div className={'unauthorized-user'}>
                     <span className={'connection-text'}>{message}{/*status*/}</span>
-                    <span className={'navbar-item login-button'} onClick={() => setIsDialogOpen(true)}>Войти</span>
+                    <span className={'navbar-item login-button'} onClick={() => setIsRegistrationDialogOpen(true)}>Регистрация</span>
+                    <span className={'navbar-item login-button'} onClick={() => setIsLoginDialogOpen(true)}>Войти</span>
                 </div>
                     )
         }
