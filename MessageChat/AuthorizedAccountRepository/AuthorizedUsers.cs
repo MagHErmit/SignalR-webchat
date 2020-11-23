@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MessageChat.AccountRepository
+namespace MessageChat.AuthorizedAccountRepository
 {
     public class AuthorizedUsers : IAuthorizedUsersRepository
     {

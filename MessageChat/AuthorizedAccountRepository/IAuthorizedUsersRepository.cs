@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MessageChat.AccountRepository
+namespace MessageChat.AuthorizedAccountRepository
 {
     public interface IAuthorizedUsersRepository
     {

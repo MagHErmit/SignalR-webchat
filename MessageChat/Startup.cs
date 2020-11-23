@@ -1,12 +1,13 @@
 using System;
 using MessageChat.SignalR;
-using MessageChat.AccountRepository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MessageChat.DataRepositories;
+using MessageChat.AuthorizedAccountRepository;
 
 namespace MessageChat
 {
@@ -16,6 +17,7 @@ namespace MessageChat
         {
             services.AddSingleton<MessageHub>();
             services.AddSingleton<IAuthorizedUsersRepository, AuthorizedUsers>();
+            services.AddSingleton<IAccountRepository, AccountRepository>();
             services.AddControllers();
             services.AddCors();
             services.AddSignalR(options =>
