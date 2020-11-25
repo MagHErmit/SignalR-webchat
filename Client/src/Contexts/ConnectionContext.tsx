@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import SignalRManager from '../SignalR/SignalRManager'
 import { AccountContext } from './AccountContext'
 
@@ -20,15 +20,14 @@ export const ConnectionContextProvider: React.FC = ({children}) => {
     const connectionInterval = 5000
 
     const [status, setStatus] = useState(ConnectionStatus.None)
-    const { currentUserName } = useContext(AccountContext)
+    const { isLogged } = useContext(AccountContext)
     const timerId = useRef<NodeJS.Timeout>()
+    
     const stopConnection = () => {
         clearInterval(timerId.current as NodeJS.Timeout)
         SignalRManager.instance.stop()
         setStatus(ConnectionStatus.None)
     }
-
-    
 
     const startConnection = () => {
         timerId.current = setInterval(() => {
@@ -56,13 +55,13 @@ export const ConnectionContextProvider: React.FC = ({children}) => {
     }, [])
 
     useEffect(() => {
-        if(currentUserName !== '')
+        if(isLogged) {
             startConnection()
+        }
         else if(!SignalRManager.instance.isDisconnected()) {
             stopConnection()
         }
-        
-    },[currentUserName])
+    },[isLogged])
     
     return (<ConnectionContext.Provider value={{status}}>
         {children}

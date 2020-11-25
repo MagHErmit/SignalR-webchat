@@ -24,6 +24,7 @@ namespace MessageChat.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginInDto loginData)
         {
+            //return BadRequest("Введен некорректный логин");
             if (string.IsNullOrWhiteSpace(loginData.Name) || loginData.Name.Length < 4 || loginData.Name.Length > 20)
                 return BadRequest("Введен некорректный логин");
             
@@ -47,7 +48,8 @@ namespace MessageChat.Controllers
             return new ObjectResult( new 
             {
                 name = loginData.Name,
-                identificator = claims[0].Value
+                identificator = claims[0].Value,
+                password = loginData.Password
             });
         }
 

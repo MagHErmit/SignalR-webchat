@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect, useContext, useRef } from 'react'
+import React, { useState, createContext, useEffect, useContext} from 'react'
 import SignalRManager from '../SignalR/SignalRManager'
 import { AccountContext } from './AccountContext';
 
