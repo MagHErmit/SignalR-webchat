@@ -6,12 +6,12 @@ namespace MessageChat.DataRepositories
 {
     public class MessageRepository : IMessageRepository
     {
-        public MessageModel GetMessage(int id)
+        public bool AppendMessage(MessageModel message)
         {
             throw new NotImplementedException();
         }
 
-        public List<MessageModel> GetPartMessages(int offset)
+        public List<MessageModel> GetMessages(int offset, int count)
         {
             throw new NotImplementedException();
         }

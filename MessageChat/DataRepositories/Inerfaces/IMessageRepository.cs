@@ -5,8 +5,8 @@ namespace MessageChat.DataRepositories
 {
     public interface IMessageRepository
     {
-        public MessageModel GetMessage(int id);
+        public bool AppendMessage(MessageModel message);
 
-        public List<MessageModel> GetPartMessages(int offset);
+        public List<MessageModel> GetMessages(int offset, int count);
     }
 }

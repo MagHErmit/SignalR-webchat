@@ -31,6 +31,12 @@ export const ChatContextProvider: React.FC = ({children}) => {
 
             setMessages(existedMessages => [...existedMessages, message])
         })
+        SignalRManager.instance.connection.on('InitMessages', (messages: UserMessage[]) => {
+            messages.forEach(e => {
+                e.isMy = currentUserIdentificator === e.userIdentificator
+            })
+            setMessages(messages)
+        })
 
         return () => {
             SignalRManager.instance.connection.off('ReciveFromServerMessage')
