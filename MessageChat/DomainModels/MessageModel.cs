@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessageChat.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,11 +8,17 @@ namespace MessageChat.DomainModels
 {
     public class MessageModel
     {
-        public int Id { get; set; }
+        public MessageModel() { }
 
-        public int ChatId { get; set; }
+        public MessageModel(UserChatMessageDto message)
+        {
+            ChatId = message.ChatId;
+            UserId = message.UserId;
+            Text = message.Text;
+        }
+        public int ChatId { get; set; } = 2; // chat id, while chat's system not use
 
-        public string UserID { get; set; }
+        public string UserId { get; set; }
 
         public string Text { get; set; }
     }

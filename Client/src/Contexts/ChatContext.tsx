@@ -4,7 +4,7 @@ import { AccountContext } from './AccountContext';
 
 type UserMessage = {
     userName: string,
-    userIdentificator: string,
+    userId: string,
     text: string,
     isMy: boolean,
     time: number
@@ -26,14 +26,14 @@ export const ChatContextProvider: React.FC = ({children}) => {
     const { currentUserName, currentUserIdentificator } = useContext(AccountContext)
     useEffect(() => {
         SignalRManager.instance.connection.on('ReciveFromServerMessage',(message: UserMessage) => {
-            message.isMy = currentUserIdentificator === message.userIdentificator
+            message.isMy = currentUserIdentificator === message.userId
             message.time = new Date().getTime()
 
             setMessages(existedMessages => [...existedMessages, message])
         })
         SignalRManager.instance.connection.on('InitMessages', (messages: UserMessage[]) => {
             messages.forEach(e => {
-                e.isMy = currentUserIdentificator === e.userIdentificator
+                e.isMy = currentUserIdentificator === e.userId
             })
             setMessages(messages)
         })

@@ -26,6 +26,7 @@ namespace MessageChat
             services.AddSingleton<MessageHub>();
             services.AddSingleton<IAuthorizedUsersRepository, AuthorizedUsers>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
+            services.AddSingleton<IMessageRepository, MessageRepository>();
             services.AddControllers();
             services.AddCors();
             services.AddSignalR(options =>

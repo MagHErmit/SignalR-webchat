@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using MessageChat.AuthorizedAccountRepository;
 using MessageChat.DataRepositories;
+using MessageChat.DomainModels;
 using MessageChat.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -15,39 +16,47 @@ namespace MessageChat.SignalR
     public class MessageHub : Hub
     {
         private readonly IAuthorizedUsersRepository _usersIdentificators;
-       
+        private readonly IMessageRepository _messages;
 
-        public MessageHub(IAuthorizedUsersRepository list)
+        public MessageHub(IAuthorizedUsersRepository list, IMessageRepository messages)
         {
             _usersIdentificators = list;
+            _messages = messages;
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             if(!string.IsNullOrEmpty(Context.UserIdentifier))
                 _usersIdentificators.AddUser(Context.UserIdentifier);
-            /*var mes = new UserChatMessageDto()
+            var l = _messages.GetMessages(0, 5);
+            var mess = new List<UserChatMessageDto>();
+            foreach(var m in l)
             {
-                UserIdentificator = Context.UserIdentifier,
-                IsMy = true,
-                UserName = Context.User.Claims.ToArray()[1].Value,
-                Text = "testing init"
-            };
-            await SendInitMessages(new List<UserChatMessageDto>() { mes });*/
-            return Task.CompletedTask;
+                mess.Add(new UserChatMessageDto()
+                {
+                    UserId = m.UserId,
+                    UserName = Context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value,
+                    IsMy = true,
+                    Text = m.Text
+                });
+            }
+            mess.Reverse();
+            await SendInitMessages(mess);
         }
 
         public async Task ReciveMessage(string text)
         {
             var currentUserIdentificator = Context.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var currentUserName = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+
             var userChatMessage = new UserChatMessageDto
             {
                 Text = text,
                 IsMy = false,
-                UserIdentificator = currentUserIdentificator,
+                UserId = currentUserIdentificator,
                 UserName = currentUserName
             };
+            _messages.AppendMessage(new MessageModel(userChatMessage));
             await SendMessage(userChatMessage);
         }
        
