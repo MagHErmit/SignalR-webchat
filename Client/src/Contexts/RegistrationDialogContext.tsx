@@ -56,7 +56,7 @@ export const RegistrationDialogContextProvider: React.FC = ({ children }) => {
         setStateLogin(true)
         let RegistrationRes: any
         if(inputEmailRef.current && inputPasswordRef.current) {
-            let reg: RegistrationModel = {name: res[0], email: inputEmailRef.current.value, password: md5(inputPasswordRef.current.value)}
+            let reg: RegistrationModel = {name: res[0], email: inputEmailRef.current.value, password: inputPasswordRef.current.value}
             RegistrationRes = await registration(reg)
         }
         setStateLogin(false)

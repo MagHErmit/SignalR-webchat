@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MessageChat.Controllers
 {
@@ -29,8 +31,10 @@ namespace MessageChat.Controllers
                 return BadRequest("Введен некорректный логин");
             
             var user = _users.GetUser(loginData.Name);
-            if (user.Password != loginData.Password)
+            var pass = GetHash(loginData.Password);
+            if (user.Password != GetHash(loginData.Password))
                 return Unauthorized("Неверный пароль");
+
             var claims = new []
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
@@ -58,7 +62,7 @@ namespace MessageChat.Controllers
         {
             if (string.IsNullOrWhiteSpace(regData.Name) || regData.Name.Length < 4 || regData.Name.Length > 20)
                 return BadRequest("Введенно некорректное имя пользователя");
-
+            regData.Password = GetHash(regData.Password);
             _users.RegisterUser(new UserModel(Guid.NewGuid().ToString(), regData));
             return new EmptyResult();
         }
@@ -68,6 +72,14 @@ namespace MessageChat.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return new EmptyResult();
+        }
+
+        private string GetHash(string input)
+        {
+            var md5 = MD5.Create();
+            var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            return Convert.ToBase64String(hash);
         }
     }
 }

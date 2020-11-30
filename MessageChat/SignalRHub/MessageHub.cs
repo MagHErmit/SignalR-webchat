@@ -8,6 +8,7 @@ using MessageChat.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
+
 namespace MessageChat.SignalR
 {
     [Authorize]
@@ -21,18 +22,19 @@ namespace MessageChat.SignalR
             _usersIdentificators = list;
         }
 
-        public override async Task OnConnectedAsync()
+        public override Task OnConnectedAsync()
         {
             if(!string.IsNullOrEmpty(Context.UserIdentifier))
                 _usersIdentificators.AddUser(Context.UserIdentifier);
-            var mes = new UserChatMessageDto()
+            /*var mes = new UserChatMessageDto()
             {
                 UserIdentificator = Context.UserIdentifier,
                 IsMy = true,
                 UserName = Context.User.Claims.ToArray()[1].Value,
                 Text = "testing init"
             };
-            await SendInitMessages(new List<UserChatMessageDto>() { mes });
+            await SendInitMessages(new List<UserChatMessageDto>() { mes });*/
+            return Task.CompletedTask;
         }
 
         public async Task ReciveMessage(string text)

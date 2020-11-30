@@ -54,7 +54,7 @@ export const LogingDialogContextProvder: React.FC = ({ children }) => {
         setStateLogin(true)
         let loginRes = false
         if(inputPasswordRef.current) {
-            let log: LoginModel = {name: res[0], password: md5(inputPasswordRef.current.value)}
+            let log: LoginModel = {name: res[0], password: inputPasswordRef.current.value}
             loginRes = await login(log)
         }
         setStateLogin(false)
