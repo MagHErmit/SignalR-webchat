@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using MessageChat.DataRepositories;
 using MessageChat.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessageChat.Controllers
 {
+    [Authorize]
     [Route("messages")]
     public class MessagesController : ControllerBase
     {

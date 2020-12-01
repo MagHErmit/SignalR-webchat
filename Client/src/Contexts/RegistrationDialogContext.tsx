@@ -2,7 +2,6 @@ import React, { useContext, useState, useRef } from 'react'
 import { TextField, Button } from '@material-ui/core'
 import '../styles/LoginDialog.css'
 import { AccountContext, RegistrationModel } from './AccountContext'
-import md5 from 'md5'
 
 
 interface IRegistrationDialogContext {
