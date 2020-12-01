@@ -9,25 +9,24 @@ namespace MessageChat.DataRepositories
 {
     public class AccountRepository : IAccountRepository
     {
-        private readonly string _connectionString;
-        private readonly DbReader _reader;
-        private UserModel _um;
+        private readonly DbHelper _dbHelper;
+        private string _userName;
+        private UserModel _userModel;
 
         private bool userRead(IDataReader res)
         {
-            _um = new UserModel()
+            _userModel = new UserModel()
             {
                 Id = res.GetString(0),
-                //Name = userName,
+                Name = _userName,
                 Password = res.GetString(1),
                 Email = res.GetString(2)
             };
             return true;
         }
-        public AccountRepository(IOptions<ConnectionSetting> conn, DbReader reader)
+        public AccountRepository(DbHelper helper)
         {
-            _connectionString = conn.Value.DefaultConnection;
-            _reader = reader;
+            _dbHelper = helper;
         }
         public UserModel GetUser(string userName)
         {
@@ -40,8 +39,9 @@ namespace MessageChat.DataRepositories
                 Value = userName
             };
             paramList.Add(nameParam);
-            _reader.ExecuteReaderProcedure(sqlExpression, paramList, userRead);
-            return _um;
+            _userName = userName;
+            _dbHelper.ExecuteReaderProcedure(sqlExpression, paramList, userRead);
+            return _userModel;
         }
 
         public bool RegisterUser(UserModel user)
@@ -82,10 +82,10 @@ namespace MessageChat.DataRepositories
                 ParameterName = "@created",
                 Value = DateTime.Now
             };
-            paramList.Add(passwordParam);
+            paramList.Add(createdParam);
 
-            //_reader.ExecuteReaderProcedure()
-            return true;// res > 0 ? true : false;
+            var res = _dbHelper.ExecuteNonQueryProcedure(sqlExpression, paramList);
+            return res > 0 ? true : false;
         }
     }
 }

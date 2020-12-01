@@ -6,11 +6,11 @@ using System.Data.SqlClient;
 
 namespace MessageChat
 {
-    public class DbReader
+    public class DbHelper
     {
         private readonly string _connectionString;
         
-        public DbReader(IOptions<ConnectionSetting> conn)
+        public DbHelper(IOptions<ConnectionSetting> conn)
         {
             _connectionString = string.IsNullOrEmpty(conn.Value.DefaultConnection) ? "Data Source=localhost;Initial Catalog=kakurin_webchat;Integrated Security=True" : conn.Value.DefaultConnection;
         }
@@ -40,6 +40,28 @@ namespace MessageChat
                 {
                     Console.WriteLine(ex);
                 }
+            }
+        }
+        public int ExecuteNonQueryProcedure(string procedureName, List<SqlParameter> parameters)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                SqlCommand command = new SqlCommand(procedureName, connection);
+                command.CommandType = CommandType.StoredProcedure;
+                int res = -1;
+                try
+                {
+                    command.Parameters.AddRange(parameters.ToArray());
+                    res =  command.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                return res;
             }
         }
 

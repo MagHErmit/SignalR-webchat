@@ -42,18 +42,19 @@ namespace MessageChat.Controllers
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var expiresUtc = DateTime.UtcNow.Add(TimeSpan.FromHours(24));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), new AuthenticationProperties
             {
                 IsPersistent = true,
                 AllowRefresh = true,
-                ExpiresUtc = DateTime.UtcNow.Add(TimeSpan.FromHours(24))
+                ExpiresUtc = expiresUtc
             });
 
-            return new ObjectResult( new 
+            return new ObjectResult(new
             {
                 name = loginData.Name,
                 identificator = claims[0].Value,
-                password = loginData.Password
+                expiresUtc = expiresUtc
             });
         }
 

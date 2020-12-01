@@ -3,7 +3,6 @@ import accountRepository from '../repository/AccountRepository'
 interface IAccountContext {
     currentUserName: string,
     currentUserIdentificator:string,
-    currentUserPassword:string,
     isLogged:boolean,
     login: (user: LoginModel) => Promise<boolean>,
     registration: (user: RegistrationModel) => Promise<boolean>,
@@ -22,7 +21,6 @@ export type RegistrationModel = LoginModel & {
 export const AccountContext = React.createContext<IAccountContext>({
     currentUserName: '',
     currentUserIdentificator: '',
-    currentUserPassword: '',
     isLogged:false,
     registration: (user: RegistrationModel) => {
         throw Error('Не проинициализирован контекст авторизации')
@@ -38,12 +36,10 @@ export const AccountContext = React.createContext<IAccountContext>({
 export const AccountContextProvider: React.FC = ({ children }) => {
     const savedUserName = localStorage.getItem('login')
     const savedUserIdentificator = localStorage.getItem('identificator')
-    const savedUserPassword = localStorage.getItem('password')
+    const expiresUtc = localStorage.getItem('expiresUtc')
     const [isLogged, setLogged] = useState(false)
-    const [currentUserName, setUserName] = useState(savedUserName === null ? '' : savedUserName)
+    const [currentUserName, setUserName] = useState(savedUserName === null || !checkCookiesExpire(expiresUtc) ? '' : savedUserName)
     const [currentUserIdentificator, setUserIdentificator] = useState(savedUserIdentificator === null ? '' : savedUserIdentificator)
-    const [currentUserPassword, setUserPassword] = useState(savedUserPassword === null ? '' : savedUserPassword)
-    let log = useRef({name: currentUserName, password: currentUserPassword})
 
     const login = async (user: LoginModel) => {
         let response: any
@@ -57,11 +53,10 @@ export const AccountContextProvider: React.FC = ({ children }) => {
             const json = await response.json()
             setUserName(json.name)
             setUserIdentificator(json.identificator)
-            setUserPassword(json.password)
             setLogged(true)
             localStorage.setItem('login', json.name)
             localStorage.setItem('identificator', json.identificator)
-            localStorage.setItem('password', json.password)
+            localStorage.setItem('expiresUtc', json.expiresUtc)
         }
         else {
             return false
@@ -74,7 +69,7 @@ export const AccountContextProvider: React.FC = ({ children }) => {
         setUserIdentificator('')
         localStorage.removeItem('login')
         localStorage.removeItem('identificator')
-        localStorage.removeItem('password')
+        localStorage.removeItem('expiresUtc')
         setLogged(false)
         await accountRepository.logout()
     }
@@ -98,13 +93,26 @@ export const AccountContextProvider: React.FC = ({ children }) => {
 
     useEffect(() => {
         if(currentUserName !== '') {
-            login(log.current)
+            setLogged(true)
         }
     },[])
 
     return (
-        <AccountContext.Provider value={{currentUserName, currentUserIdentificator, currentUserPassword, isLogged, registration, login, logout}}>
+        <AccountContext.Provider value={{currentUserName, currentUserIdentificator, isLogged, registration, login, logout}}>
             {children}
         </AccountContext.Provider>
     )
+}
+
+function checkCookiesExpire(item: string | null): boolean {
+
+    if (item == null)
+        return false
+
+    //const object = JSON.parse(item)
+    const expireDate = Date.parse(item)//object.expireDate)
+    if (expireDate > Date.now())
+        return true
+
+    return false
 }

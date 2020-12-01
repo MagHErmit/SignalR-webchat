@@ -2,133 +2,112 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace MessageChat.DataRepositories
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly string _connectionString;
-
-        public MessageRepository(IOptions<ConnectionSetting> conn)
+        private readonly DbHelper _dbHelper;
+        private List<MessageModel> _messages;
+        public MessageRepository(DbHelper helper)
         {
-            _connectionString = conn.Value.DefaultConnection;
+            _messages = new List<MessageModel>();
+            _dbHelper = helper;
         }
         public bool AppendMessage(MessageModel message)
         {
             string sqlExpression = "sp_AppendMessage";
-            using SqlConnection connection = new SqlConnection(_connectionString);
-
-            connection.Open();
-            SqlCommand command = new SqlCommand(sqlExpression, connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-
+            var paramList = new List<SqlParameter>();
             SqlParameter chatParam = new SqlParameter
             {
                 ParameterName = "@chat",
                 Value = message.ChatId
             };
-            command.Parameters.Add(chatParam);
+            paramList.Add(chatParam);
 
             SqlParameter userParam = new SqlParameter
             {
                 ParameterName = "@user",
                 Value = message.UserId
             };
-            command.Parameters.Add(userParam);
+            paramList.Add(userParam);
 
             SqlParameter createdParam = new SqlParameter
             {
                 ParameterName = "@created",
                 Value = DateTime.Now
             };
-            command.Parameters.Add(createdParam);
+            paramList.Add(createdParam);
 
             SqlParameter textParam = new SqlParameter
             {
                 ParameterName = "@text",
                 Value = message.Text
             };
-            command.Parameters.Add(textParam);
+            paramList.Add(textParam);
 
-            
-            var res = command.ExecuteNonQuery();
+
+            var res = _dbHelper.ExecuteNonQueryProcedure(sqlExpression, paramList);
             return res > 0 ? true : false;
+        }
+
+        private bool pushMessages(IDataReader reader)
+        {
+            _messages.Add(new MessageModel()
+            {
+                UserId = reader.GetString(0),
+                UserName = reader.GetString(1),
+                Text = reader.GetString(2)
+            });
+            return true;
         }
 
         public List<MessageModel> GetMessages(int offset, int count)
         {
             string sqlExpression = "sp_GetMessages";
-            using SqlConnection connection = new SqlConnection(_connectionString);
-
-            connection.Open();
-            SqlCommand command = new SqlCommand(sqlExpression, connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
+            var paramList = new List<SqlParameter>();
 
             SqlParameter chatParam = new SqlParameter
             {
                 ParameterName = "@chat",
                 Value = 2 // chat id, while chat's system not use
             };
-            command.Parameters.Add(chatParam);
+            paramList.Add(chatParam);
 
             SqlParameter offsetParam = new SqlParameter
             {
                 ParameterName = "@offset",
                 Value = offset
             };
-            command.Parameters.Add(offsetParam);
+            paramList.Add(offsetParam);
 
             SqlParameter countParam = new SqlParameter
             {
                 ParameterName = "@count",
                 Value = count
             };
-            command.Parameters.Add(countParam);
-
-
-            var res = command.ExecuteReader();
-            List<MessageModel> l = new List<MessageModel>();
-            while (res.Read())
-            {
-                l.Add(new MessageModel()
-                {
-                    UserId = res.GetString(0),
-                    UserName = res.GetString(1),
-                    Text = res.GetString(2)
-                });
-            }
-            return l;
+            paramList.Add(countParam);
+            _messages = new List<MessageModel>();
+            _dbHelper.ExecuteReaderProcedure(sqlExpression, paramList, pushMessages);
+            return _messages;
         }
 
         public List<MessageModel> GetMessagesByUserId(string userId)
         {
             string sqlExpression = "sp_GetMessagesByUserId";
-            using SqlConnection connection = new SqlConnection(_connectionString);
-
-            connection.Open();
-            SqlCommand command = new SqlCommand(sqlExpression, connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
+            var paramList = new List<SqlParameter>();
 
             SqlParameter userParam = new SqlParameter
             {
                 ParameterName = "@user",
                 Value = userId
             };
-            command.Parameters.Add(userParam);
-
-            var res = command.ExecuteReader();
-            List<MessageModel> l = new List<MessageModel>();
-            while(res.Read())
-            {
-                l.Add(new MessageModel()
-                {
-                    ChatId = res.GetInt32(0),
-                    UserId = userId,
-                    Text = res.GetString(1)
-                });
-            }
-            return l;
+            paramList.Add(userParam);
+            _messages = new List<MessageModel>();
+            _dbHelper.ExecuteReaderProcedure(sqlExpression, paramList, pushMessages);
+            return _messages;
         }
     }
 }
