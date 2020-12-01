@@ -8,10 +8,12 @@ namespace MessageChat.DataRepositories
     public class AccountRepository : IAccountRepository
     {
         private readonly string _connectionString;
+        private readonly DbReader _reader;
 
-        public AccountRepository(IOptions<ConnectionSetting> conn)
+        public AccountRepository(IOptions<ConnectionSetting> conn, DbReader reader)
         {
             _connectionString = conn.Value.DefaultConnection;
+            _reader = reader;
         }
         public UserModel GetUser(string userName)
         {

@@ -94,7 +94,8 @@ namespace MessageChat.DataRepositories
                 l.Add(new MessageModel()
                 {
                     UserId = res.GetString(0),
-                    Text = res.GetString(1)
+                    UserName = res.GetString(1),
+                    Text = res.GetString(2)
                 });
             }
             return l;

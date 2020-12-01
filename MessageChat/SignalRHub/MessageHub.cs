@@ -24,24 +24,11 @@ namespace MessageChat.SignalR
             _messages = messages;
         }
 
-        public override async Task OnConnectedAsync()
+        public override Task OnConnectedAsync()
         {
             if(!string.IsNullOrEmpty(Context.UserIdentifier))
                 _usersIdentificators.AddUser(Context.UserIdentifier);
-            var l = _messages.GetMessages(0, 5);
-            var mess = new List<UserChatMessageDto>();
-            foreach(var m in l)
-            {
-                mess.Add(new UserChatMessageDto()
-                {
-                    UserId = m.UserId,
-                    UserName = Context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value,
-                    IsMy = true,
-                    Text = m.Text
-                });
-            }
-            mess.Reverse();
-            await SendInitMessages(mess);
+            return Task.CompletedTask;
         }
 
         public async Task ReciveMessage(string text)
@@ -65,11 +52,6 @@ namespace MessageChat.SignalR
             if (!string.IsNullOrEmpty(Context.UserIdentifier))
                 _usersIdentificators.RemoveUser(Context.UserIdentifier);
             return Task.CompletedTask;
-        }
-
-        private async Task SendInitMessages(List<UserChatMessageDto> messages)
-        {
-            await Clients.User(Context.UserIdentifier).SendAsync("InitMessages", messages);
         }
 
         private async Task SendMessage(UserChatMessageDto message)

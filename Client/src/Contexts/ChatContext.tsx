@@ -1,6 +1,8 @@
 import React, { useState, createContext, useEffect, useContext} from 'react'
 import SignalRManager from '../SignalR/SignalRManager'
 import { AccountContext } from './AccountContext';
+import messagesRepository from '../repository/MessagesRepository'
+import { runInNewContext } from 'vm';
 
 type UserMessage = {
     userName: string,
@@ -24,6 +26,18 @@ export const ChatContext = createContext<IChatContext>({
 export const ChatContextProvider: React.FC = ({children}) => {
     const [messages, setMessages] = useState<UserMessage[]>([])
     const { currentUserName, currentUserIdentificator } = useContext(AccountContext)
+    const getInitMessages = async () => {
+        let response: any
+        try {
+            response = await messagesRepository.getMessages().catch()
+        }
+        catch {
+            return 
+        }
+        
+        return await response.json()
+    }
+
     useEffect(() => {
         SignalRManager.instance.connection.on('ReciveFromServerMessage',(message: UserMessage) => {
             message.isMy = currentUserIdentificator === message.userId
@@ -31,6 +45,7 @@ export const ChatContextProvider: React.FC = ({children}) => {
 
             setMessages(existedMessages => [...existedMessages, message])
         })
+        let m = getInitMessages()
         SignalRManager.instance.connection.on('InitMessages', (messages: UserMessage[]) => {
             messages.forEach(e => {
                 e.isMy = currentUserIdentificator === e.userId
