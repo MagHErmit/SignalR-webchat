@@ -19,21 +19,17 @@ namespace MessageChat.Controllers
             _messages = messages;
         }
         [HttpGet("Get")]
-        public async Task<JsonResult> GetMessages()
+        public async Task<IEnumerable<UserChatMessageDto>> GetMessages()
         {
-            var l = _messages.GetMessages(0, 5);
-            var mess = new List<UserChatMessageDto>();
-            foreach (var m in l)
-            {
-                mess.Add(new UserChatMessageDto()
+            var currentUserId = HttpContext.User.Claims.ElementAt(0).Value;
+            return _messages.GetMessages(0, 20)
+                .Select(m => new UserChatMessageDto
                 {
                     UserId = m.UserId,
                     UserName = m.UserName,
-                    Text = m.Text
-                });
-            }
-            mess.Reverse();
-            return new JsonResult("asd");
+                    Text = m.Text,
+                    IsMy = currentUserId == m.UserId
+                }).Reverse();
         }
     }
 }

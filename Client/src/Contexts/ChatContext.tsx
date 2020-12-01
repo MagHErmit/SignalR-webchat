@@ -34,8 +34,10 @@ export const ChatContextProvider: React.FC = ({children}) => {
         catch {
             return 
         }
-        
-        return await response.json()
+        if(response.status === 200) {
+            const json = await response.json();
+            setMessages(json)
+        }
     }
 
     useEffect(() => {
@@ -45,14 +47,7 @@ export const ChatContextProvider: React.FC = ({children}) => {
 
             setMessages(existedMessages => [...existedMessages, message])
         })
-        let m = getInitMessages()
-        SignalRManager.instance.connection.on('InitMessages', (messages: UserMessage[]) => {
-            messages.forEach(e => {
-                e.isMy = currentUserIdentificator === e.userId
-            })
-            setMessages(messages)
-        })
-
+        getInitMessages()
         return () => {
             SignalRManager.instance.connection.off('ReciveFromServerMessage')
         }

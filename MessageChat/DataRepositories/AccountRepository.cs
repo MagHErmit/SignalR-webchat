@@ -1,6 +1,8 @@
 ﻿using MessageChat.DomainModels;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace MessageChat.DataRepositories
@@ -9,7 +11,19 @@ namespace MessageChat.DataRepositories
     {
         private readonly string _connectionString;
         private readonly DbReader _reader;
+        private UserModel _um;
 
+        private bool userRead(IDataReader res)
+        {
+            _um = new UserModel()
+            {
+                Id = res.GetString(0),
+                //Name = userName,
+                Password = res.GetString(1),
+                Email = res.GetString(2)
+            };
+            return true;
+        }
         public AccountRepository(IOptions<ConnectionSetting> conn, DbReader reader)
         {
             _connectionString = conn.Value.DefaultConnection;
@@ -19,75 +33,59 @@ namespace MessageChat.DataRepositories
         {
             // TODO: Добавить обработку ошибок
             string sqlExpression = "sp_GetUserCreditals";
-            using SqlConnection connection = new SqlConnection(_connectionString);
-            
-            connection.Open();
-            SqlCommand command = new SqlCommand(sqlExpression, connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
+            var paramList = new List<SqlParameter>();
             SqlParameter nameParam = new SqlParameter
             {
                 ParameterName = "@name",
                 Value = userName
             };
-            command.Parameters.Add(nameParam);
-            var res = command.ExecuteReader();
-            res.Read();
-            return new UserModel()
-            {
-                Id = res.GetString(0),
-                Name = userName,
-                Password = res.GetString(1),
-                Email = res.GetString(2)
-            };
-                
+            paramList.Add(nameParam);
+            _reader.ExecuteReaderProcedure(sqlExpression, paramList, userRead);
+            return _um;
         }
 
         public bool RegisterUser(UserModel user)
         {
             string sqlExpression = "sp_RegisterUser";
-            using SqlConnection connection = new SqlConnection(_connectionString);
-
-            connection.Open();
-            SqlCommand command = new SqlCommand(sqlExpression, connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
+            var paramList = new List<SqlParameter>();
 
             SqlParameter idParam = new SqlParameter
             {
                 ParameterName = "@id",
                 Value = user.Id
             };
-            command.Parameters.Add(idParam);
+            paramList.Add(idParam);
 
             SqlParameter nameParam = new SqlParameter
             {
                 ParameterName = "@name",
                 Value = user.Name
             };
-            command.Parameters.Add(nameParam);
+            paramList.Add(nameParam);
 
             SqlParameter emailParam = new SqlParameter
             {
                 ParameterName = "@email",
                 Value = user.Email
             };
-            command.Parameters.Add(emailParam);
+            paramList.Add(emailParam);
 
             SqlParameter passwordParam = new SqlParameter
             {
                 ParameterName = "@password",
                 Value = user.Password
             };
-            command.Parameters.Add(passwordParam);
+            paramList.Add(passwordParam);
 
             SqlParameter createdParam = new SqlParameter
             {
                 ParameterName = "@created",
                 Value = DateTime.Now
             };
+            paramList.Add(passwordParam);
 
-            command.Parameters.Add(createdParam);
-            var res = command.ExecuteNonQuery();
-            return res > 0 ? true : false;
+            //_reader.ExecuteReaderProcedure()
+            return true;// res > 0 ? true : false;
         }
     }
 }
