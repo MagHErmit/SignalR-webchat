@@ -14,8 +14,9 @@ namespace MessageChat
         {
             _connectionString = string.IsNullOrEmpty(conn.Value.DefaultConnection) ? "Data Source=localhost;Initial Catalog=kakurin_webchat;Integrated Security=True" : conn.Value.DefaultConnection;
         }
-        public void ExecuteReaderProcedure(string procedureName, List<SqlParameter> parameters, Func<IDataReader, bool> func)
+        public IEnumerable<T> ExecuteReaderProcedure<T>(string procedureName, List<SqlParameter> parameters, Func<IDataReader, T> func)
         {
+            var list = new List<T>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -31,7 +32,7 @@ namespace MessageChat
                     {
                         while (reader.Read())
                         {
-                            func(reader);
+                            list.Add(func(reader));
                         }
                     }
                     reader.Close();
@@ -40,6 +41,7 @@ namespace MessageChat
                 {
                     Console.WriteLine(ex);
                 }
+                return list;
             }
         }
         public int ExecuteNonQueryProcedure(string procedureName, List<SqlParameter> parameters)

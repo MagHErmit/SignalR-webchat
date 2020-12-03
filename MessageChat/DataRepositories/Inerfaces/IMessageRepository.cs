@@ -7,8 +7,8 @@ namespace MessageChat.DataRepositories
     {
         public bool AppendMessage(MessageModel message);
 
-        public List<MessageModel> GetMessages(int offset, int count);
+        public IEnumerable<MessageModel> GetMessages(int offset, int count);
 
-        public List<MessageModel> GetMessagesByUserId(string userId);
+        public IEnumerable<MessageModel> GetMessagesByUserId(string userId);
     }
 }
