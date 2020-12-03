@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace MessageChat.DataRepositories
 {
@@ -14,7 +15,7 @@ namespace MessageChat.DataRepositories
         {
             _dbHelper = helper;
         }
-        public bool AppendMessage(MessageModel message)
+        public async Task<bool> AppendMessageAsync(MessageModel message)
         {
             string sqlExpression = "sp_AppendMessage";
             var paramList = new List<SqlParameter>()
@@ -24,11 +25,10 @@ namespace MessageChat.DataRepositories
                 new SqlParameter { ParameterName = "@created", Value = DateTime.Now },
                 new SqlParameter { ParameterName = "@text", Value = message.Text }
             };
-            var res = _dbHelper.ExecuteNonQueryProcedure(sqlExpression, paramList);
-            return res > 0;
+            return await _dbHelper.ExecuteNonQueryProcedureAsync(sqlExpression, paramList) > 0;
         }
 
-        public IEnumerable<MessageModel> GetMessages(int offset, int count)
+        public async Task<IEnumerable<MessageModel>> GetMessagesAsync(int offset, int count)
         {
             string sqlExpression = "sp_GetMessages";
             var paramList = new List<SqlParameter>()
@@ -37,7 +37,7 @@ namespace MessageChat.DataRepositories
                 new SqlParameter { ParameterName = "@offset", Value = offset},
                 new SqlParameter { ParameterName = "@count", Value = count}
             };
-            return _dbHelper.ExecuteReaderListProcedure(sqlExpression, paramList, reader =>
+            return await _dbHelper.ExecuteReaderListProcedureAsync(sqlExpression, paramList, reader =>
             {
                 return new MessageModel()
                 {
@@ -48,7 +48,7 @@ namespace MessageChat.DataRepositories
             });
         }
 
-        public IEnumerable<MessageModel> GetMessagesByUserId(string userId)
+        public async Task<IEnumerable<MessageModel>> GetMessagesByUserIdAsync(string userId)
         {
             string sqlExpression = "sp_GetMessagesByUserId";
             var paramList = new List<SqlParameter>()
@@ -56,7 +56,7 @@ namespace MessageChat.DataRepositories
                 new SqlParameter { ParameterName = "@user", Value = userId }
             };
 
-            return _dbHelper.ExecuteReaderListProcedure(sqlExpression, paramList, reader =>
+            return await _dbHelper.ExecuteReaderListProcedureAsync(sqlExpression, paramList, reader =>
             {
                 return new MessageModel()
                 {

@@ -30,7 +30,7 @@ namespace MessageChat.Controllers
             if (string.IsNullOrWhiteSpace(loginData.Name) || loginData.Name.Length < 4 || loginData.Name.Length > 20)
                 return BadRequest("Введен некорректный логин");
             
-            var user = _users.GetUser(loginData.Name);
+            var user = await _users.GetUserAsync(loginData.Name);
             var pass = GetHash(loginData.Password);
             if (user.Password != GetHash(loginData.Password))
                 return Unauthorized("Неверный пароль");
@@ -64,7 +64,7 @@ namespace MessageChat.Controllers
             if (string.IsNullOrWhiteSpace(regData.Name) || regData.Name.Length < 4 || regData.Name.Length > 20)
                 return BadRequest("Введенно некорректное имя пользователя");
             regData.Password = GetHash(regData.Password);
-            _users.RegisterUser(new UserModel(Guid.NewGuid().ToString(), regData));
+            await _users.RegisterUserAsync(new UserModel(Guid.NewGuid().ToString(), regData));
             return new EmptyResult();
         }
 

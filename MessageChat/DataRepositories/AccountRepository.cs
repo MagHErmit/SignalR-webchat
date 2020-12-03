@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace MessageChat.DataRepositories
 {
@@ -11,16 +12,12 @@ namespace MessageChat.DataRepositories
     {
         private readonly DbHelper _dbHelper;
 
-        private bool userRead(IDataReader res)
-        {
-            
-            return true;
-        }
         public AccountRepository(DbHelper helper)
         {
             _dbHelper = helper;
         }
-        public UserModel GetUser(string userName)
+
+        public async Task<UserModel> GetUserAsync(string userName)
         {
             // TODO: Добавить обработку ошибок
             string sqlExpression = "sp_GetUserCreditals";
@@ -29,7 +26,7 @@ namespace MessageChat.DataRepositories
                 new SqlParameter { ParameterName = "@name", Value = userName }
             };
 
-            return _dbHelper.ExecuteReaderProcedure(sqlExpression, paramList, reader => 
+            return await _dbHelper.ExecuteReaderProcedureAsync(sqlExpression, paramList, reader => 
             {
                 return new UserModel()
                 {
@@ -41,7 +38,7 @@ namespace MessageChat.DataRepositories
             });
         }
 
-        public bool RegisterUser(UserModel user)
+        public async Task<bool> RegisterUserAsync(UserModel user)
         {
             string sqlExpression = "sp_RegisterUser";
             var paramList = new List<SqlParameter>()
@@ -52,8 +49,7 @@ namespace MessageChat.DataRepositories
                 new SqlParameter{ ParameterName = "@password", Value = user.Password },
                 new SqlParameter{ ParameterName = "@created", Value = DateTime.Now }
             };
-            var res = _dbHelper.ExecuteNonQueryProcedure(sqlExpression, paramList);
-            return res > 0;
+            return await _dbHelper.ExecuteNonQueryProcedureAsync(sqlExpression, paramList) > 0;
         }
     }
 }

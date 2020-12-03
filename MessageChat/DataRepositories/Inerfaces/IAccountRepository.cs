@@ -1,11 +1,12 @@
 ﻿using MessageChat.DomainModels;
+using System.Threading.Tasks;
 
 namespace MessageChat.DataRepositories
 {
     public interface IAccountRepository
     {
-        public UserModel GetUser(string userName);
+        public Task<UserModel> GetUserAsync(string userName);
 
-        public bool RegisterUser(UserModel user);
+        public Task<bool> RegisterUserAsync(UserModel user);
     }
 }

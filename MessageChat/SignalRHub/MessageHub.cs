@@ -43,7 +43,7 @@ namespace MessageChat.SignalR
                 UserId = currentUserIdentificator,
                 UserName = currentUserName
             };
-            _messages.AppendMessage(new MessageModel(userChatMessage));
+            await _messages.AppendMessageAsync(new MessageModel(userChatMessage));
             await SendMessage(userChatMessage);
         }
        
