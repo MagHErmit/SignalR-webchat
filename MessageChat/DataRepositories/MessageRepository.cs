@@ -25,7 +25,7 @@ namespace MessageChat.DataRepositories
                 new SqlParameter { ParameterName = "@text", Value = message.Text }
             };
             var res = _dbHelper.ExecuteNonQueryProcedure(sqlExpression, paramList);
-            return res > 0 ? true : false;
+            return res > 0;
         }
 
         public IEnumerable<MessageModel> GetMessages(int offset, int count)
@@ -37,7 +37,7 @@ namespace MessageChat.DataRepositories
                 new SqlParameter { ParameterName = "@offset", Value = offset},
                 new SqlParameter { ParameterName = "@count", Value = count}
             };
-            return _dbHelper.ExecuteReaderProcedure(sqlExpression, paramList, reader =>
+            return _dbHelper.ExecuteReaderListProcedure(sqlExpression, paramList, reader =>
             {
                 return new MessageModel()
                 {
@@ -56,7 +56,7 @@ namespace MessageChat.DataRepositories
                 new SqlParameter { ParameterName = "@user", Value = userId }
             };
 
-            return _dbHelper.ExecuteReaderProcedure(sqlExpression, paramList, reader =>
+            return _dbHelper.ExecuteReaderListProcedure(sqlExpression, paramList, reader =>
             {
                 return new MessageModel()
                 {

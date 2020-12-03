@@ -14,7 +14,35 @@ namespace MessageChat
         {
             _connectionString = string.IsNullOrEmpty(conn.Value.DefaultConnection) ? "Data Source=localhost;Initial Catalog=kakurin_webchat;Integrated Security=True" : conn.Value.DefaultConnection;
         }
-        public IEnumerable<T> ExecuteReaderProcedure<T>(string procedureName, List<SqlParameter> parameters, Func<IDataReader, T> func)
+        public T ExecuteReaderProcedure<T>(string procedureName, List<SqlParameter> parameters, Func<IDataReader, T> func)
+        {
+            var entity = default(T);
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                SqlCommand command = new SqlCommand(procedureName, connection);
+                command.CommandType = CommandType.StoredProcedure;
+                try
+                {
+                    command.Parameters.AddRange(parameters.ToArray());
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        entity = func(reader);
+                    }
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                return entity;
+            }
+        }
+        public IEnumerable<T> ExecuteReaderListProcedure<T>(string procedureName, List<SqlParameter> parameters, Func<IDataReader, T> func)
         {
             var list = new List<T>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
