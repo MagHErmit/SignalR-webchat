@@ -2,7 +2,6 @@ import React, { useState, createContext, useEffect, useContext} from 'react'
 import SignalRManager from '../SignalR/SignalRManager'
 import { AccountContext } from './AccountContext';
 import messagesRepository from '../repository/MessagesRepository'
-import { runInNewContext } from 'vm';
 
 type UserMessage = {
     userName: string,
@@ -25,7 +24,7 @@ export const ChatContext = createContext<IChatContext>({
 
 export const ChatContextProvider: React.FC = ({children}) => {
     const [messages, setMessages] = useState<UserMessage[]>([])
-    const { currentUserName, currentUserIdentificator } = useContext(AccountContext)
+    const { currentUserName, currentUserIdentificator, isLogged } = useContext(AccountContext)
     const getInitMessages = async () => {
         let response: any
         try {
@@ -48,11 +47,16 @@ export const ChatContextProvider: React.FC = ({children}) => {
 
             setMessages(existedMessages => [...existedMessages, message])
         })
-        getInitMessages()
+        
         return () => {
             SignalRManager.instance.connection.off('ReciveFromServerMessage')
         }
     }, [currentUserName, currentUserIdentificator]) 
+
+    useEffect(() => {
+        if(isLogged)
+            getInitMessages()
+    },[isLogged])
 
     const sendMessage = (message: string) => {
         return SignalRManager.instance.connection.invoke('ReciveMessage', message).catch(() => {alert('Что-то пошло не так...')})

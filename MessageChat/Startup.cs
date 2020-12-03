@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MessageChat.DataRepositories;
 using MessageChat.AuthorizedAccountRepository;
 using Microsoft.Extensions.Configuration;
+using MessageChat.DataRepositories.Inerfaces;
 
 namespace MessageChat
 {
@@ -27,6 +28,7 @@ namespace MessageChat
             services.AddSingleton<IAuthorizedUsersRepository, AuthorizedUsers>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
             services.AddSingleton<IMessageRepository, MessageRepository>();
+            services.AddSingleton<IChatsRepository, ChatsRepository>();
             services.AddSingleton<DbHelper>();
             services.AddControllers().AddControllersAsServices();
             services.AddCors();

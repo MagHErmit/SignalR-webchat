@@ -6,6 +6,7 @@ import { AccountContextProvider } from './Contexts/AccountContext'
 import { LogingDialogContextProvder } from './Contexts/LoginDialogContext'
 import { ConnectionContextProvider } from './Contexts/ConnectionContext'
 import { RegistrationDialogContextProvider } from './Contexts/RegistrationDialogContext'
+import { DialogListComponent } from './Components/DialogListComponent'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
               <Header />
           </LogingDialogContextProvder>
         </RegistrationDialogContextProvider>
+        <DialogListComponent />
         <ChatComponent />
       </ConnectionContextProvider>
     </AccountContextProvider>
