@@ -1,7 +1,6 @@
 .message-list {
     display: grid;
-    align-content: end;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .message {

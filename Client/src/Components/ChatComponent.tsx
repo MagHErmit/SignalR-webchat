@@ -12,12 +12,24 @@ interface IMessageBlockProps {
 
 const ChatMessageListComponent: React.FC = () => {
     const { messages } = useContext(ChatContext)
+    const bottomRef = useRef<HTMLDivElement>(null)
+    const scrollToBottom = () => {
+        if (!bottomRef.current) return
+        bottomRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        })
+    }
+    useEffect(() => {
+        scrollToBottom()
+    }, [messages])
 
     return (
         <div className='message-list'>
             {
                 messages.map((m) => <ChatMessagesBlockComponent key={m.time} isMy={m.isMy} userName={m.userName} text={m.text}/>)
             }
+            <div ref={bottomRef}> </div>
         </div>
     )
 }

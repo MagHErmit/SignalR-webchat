@@ -39,6 +39,7 @@ export const ChatContextProvider: React.FC = ({children}) => {
             setMessages(json)
         }
     }
+    
 
     useEffect(() => {
         SignalRManager.instance.connection.on('ReciveFromServerMessage',(message: UserMessage) => {
