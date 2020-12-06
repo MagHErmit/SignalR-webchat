@@ -1,53 +1,38 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AccountContext } from '../Contexts/AccountContext'
-import dialogsRepository from '../repository/DialogsRepository'
+import { DialogListContext, DialogListContextProvider } from '../Contexts/DialogListContext'
 
-
-interface IChatBlockProps {
-    id: number,
-    name: string,
-    userCreatorId: string
+interface IDialogBlockProps {
+    name: string
 }
 
-type Chat = {
-    id: number,
-    name: string,
-    userCreatorId: string
-}
 
-const DialogBlockComponent: React.FC<IChatBlockProps> = ({id, name, userCreatorId}) => {
+const DialogBlockComponent: React.FC<IDialogBlockProps> = ({name}) => {
     return <span><span>{name}</span></span>
 }
 
 export const DialogListComponent: React.FC = () => {
-    const { isLogged } = useContext(AccountContext)
-
-    const [dialogs, setDialogs] = useState<Chat[]>([])
-
-    const getDialogs = async () => {
-        let response: any
-        try {
-            response = await dialogsRepository.getDialogs().catch()
-        }
-        catch {
-            return
-        }
-        if(response.status === 200) {
-            const json = await response.json();
-            setDialogs(json)
-        }
-    }
-
+    const { dialogs } = useContext(DialogListContext)
+    
     useEffect(() => {
-        if(isLogged)
-            getDialogs()
-    }, [isLogged])
+        console.log(dialogs)
+    },[dialogs])
 
     return (
-        <div>диалоги  
-            {
-                dialogs.map((c) => <DialogBlockComponent id={c.id} name={c.name} userCreatorId={c.userCreatorId} />)
-            }
-        </div>
+        
+            <div>диалоги  
+                {
+                    dialogs.map((c) => <DialogBlockComponent name={c.name}/>)
+                }
+            </div>
+        
+    )
+}
+
+
+export const DialogComponent: React.FC = () => {
+    return (
+        <DialogListContextProvider>
+            <DialogListComponent />
+        </DialogListContextProvider>
     )
 }

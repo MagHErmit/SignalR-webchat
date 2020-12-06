@@ -45,6 +45,7 @@ namespace MessageChat
         }
         public async Task<IEnumerable<T>> ExecuteReaderListProcedureAsync<T>(string procedureName, List<SqlParameter> parameters, Func<IDataReader, T> func)
         {
+            
             var list = new List<T>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {

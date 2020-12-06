@@ -8,5 +8,6 @@ namespace MessageChat.DataRepositories
         public Task<UserModel> GetUserAsync(string userName);
 
         public Task<bool> RegisterUserAsync(UserModel user);
+
     }
 }

@@ -22,9 +22,7 @@ namespace MessageChat.Controllers
         [HttpGet("Get")]
         public async Task<IEnumerable<ChatModel>> GetDialogs()
         {
-            var currentUserId = HttpContext.User.Claims.ElementAt(0).Value;
-            var chats = await _chats.GetChatsByUserIdAsync(HttpContext.User.Claims.ToArray()[0].Value);
-            return chats;
+            return await _chats.GetChatsByUserIdAsync(HttpContext.User.Claims.ToArray()[0].Value);
         }
         
     }

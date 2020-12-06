@@ -24,7 +24,7 @@ export const ChatContext = createContext<IChatContext>({
 
 export const ChatContextProvider: React.FC = ({children}) => {
     const [messages, setMessages] = useState<UserMessage[]>([])
-    const { currentUserName, currentUserIdentificator, isLogged } = useContext(AccountContext)
+    const { currentUserIdentificator, isLogged } = useContext(AccountContext)
     const getInitMessages = async () => {
         let response: any
         try {
@@ -51,12 +51,14 @@ export const ChatContextProvider: React.FC = ({children}) => {
         return () => {
             SignalRManager.instance.connection.off('ReciveFromServerMessage')
         }
-    }, [currentUserName, currentUserIdentificator]) 
+    }, [currentUserIdentificator]) 
 
     useEffect(() => {
         if(isLogged)
             getInitMessages()
     },[isLogged])
+    
+    
 
     const sendMessage = (message: string) => {
         return SignalRManager.instance.connection.invoke('ReciveMessage', message).catch(() => {alert('Что-то пошло не так...')})
