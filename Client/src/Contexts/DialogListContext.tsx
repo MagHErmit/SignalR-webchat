@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import dialogsRepository from "../repository/DialogsRepository";
-import SignalRManager from "../SignalR/SignalRManager"
 import { AccountContext } from "./AccountContext"
 
 type Dialog = {
@@ -10,17 +9,28 @@ type Dialog = {
 }
 
 interface IDialogListContext {
-    dialogs: Dialog[]
+    dialogs: Dialog[],
+    currentDialog: number,
+    setCurrentDialog: (chatId: number) => void
 }
 
 
 export const DialogListContext = createContext<IDialogListContext>({
-    dialogs: []
+    dialogs: [],
+    currentDialog: -1,
+    setCurrentDialog: (chatId: number) => {
+        throw new Error("Контекст примера не проинициализирован")
+    }
 });
 
 export const DialogListContextProvider: React.FC = ({children}) => {
     const { isLogged } = useContext(AccountContext)
     const [dialogs, setDialogs] = useState<Dialog[]>([])
+    const [currentDialog, setCurrentDialogInternal] = useState(7)
+
+    const setCurrentDialog = (chatId: number) => {
+        setCurrentDialogInternal(chatId)
+    }
 
     const getDialogs = async () => {
         let response: any
@@ -37,12 +47,16 @@ export const DialogListContextProvider: React.FC = ({children}) => {
     }
 
     useEffect(() => {
+        console.log(currentDialog)
+    }, [currentDialog])
+
+    useEffect(() => {
         if(isLogged)
             getDialogs()
     }, [isLogged])
 
 
-    return <DialogListContext.Provider value={{dialogs}}>
+    return <DialogListContext.Provider value={{dialogs, currentDialog, setCurrentDialog}}>
         {children}
     </DialogListContext.Provider>
 }

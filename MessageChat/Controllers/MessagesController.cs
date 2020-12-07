@@ -24,7 +24,7 @@ namespace MessageChat.Controllers
         public async Task<IEnumerable<UserChatMessageDto>> GetMessages()
         {
             var currentUserId = HttpContext.User.Claims.ElementAt(0).Value;
-            var messages = await _messages.GetMessagesAsync(0, 20);
+            var messages = await _messages.GetMessagesAsync(0, 20, 7);
             return messages
                 .Select(m => new UserChatMessageDto
                 {

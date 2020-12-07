@@ -28,12 +28,12 @@ namespace MessageChat.DataRepositories
             return await _dbHelper.ExecuteNonQueryProcedureAsync(sqlExpression, paramList) > 0;
         }
 
-        public async Task<IEnumerable<MessageModel>> GetMessagesAsync(int offset, int count)
+        public async Task<IEnumerable<MessageModel>> GetMessagesAsync(int offset, int count, int chatId)
         {
             string sqlExpression = "sp_GetMessages";
             var paramList = new List<SqlParameter>()
             {
-                new SqlParameter { ParameterName = "@chat", Value = 2 /* chat id, while chat's system not use*/},
+                new SqlParameter { ParameterName = "@chat", Value = chatId},
                 new SqlParameter { ParameterName = "@offset", Value = offset},
                 new SqlParameter { ParameterName = "@count", Value = count}
             };

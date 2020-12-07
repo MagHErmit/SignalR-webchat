@@ -3,6 +3,7 @@ import '../styles/Chat.css'
 import  { ChatContext, ChatContextProvider } from '../Contexts/ChatContext'
 import { ConnectionContext, ConnectionStatus } from '../Contexts/ConnectionContext'
 import { AccountContext } from '../Contexts/AccountContext'
+import { DialogListContext } from '../Contexts/DialogListContext'
 
 interface IMessageBlockProps {
     userName: string,
@@ -83,6 +84,7 @@ const ChatMessagesBlockComponent: React.FC<IMessageBlockProps> = ({ userName, is
 
 const ChatInputBlockComponent: React.FC = () => {
     const { sendMessage } = useContext(ChatContext)
+    const { currentDialog } = useContext(DialogListContext)
     const { status } = useContext(ConnectionContext)
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
     const { currentUserName } = useContext(AccountContext)
@@ -93,12 +95,12 @@ const ChatInputBlockComponent: React.FC = () => {
             event.preventDefault()
 
             if (textAreaRef.current.value !== '') {
-                await sendMessage(textAreaRef.current.value)
+                await sendMessage(textAreaRef.current.value, currentDialog)
                 console.log(textAreaRef.current.value)
                 textAreaRef.current.value = ''
             }
         }
-    }, [textAreaRef])
+    }, [textAreaRef, currentDialog])
 
     useEffect(() => {
         if (textAreaRef.current !== null) {

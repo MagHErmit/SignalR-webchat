@@ -1,0 +1,18 @@
+.dialog-list-container {
+    background-color: #d9d9d9;
+    border-left: 1px solid darkgray;
+    border-right: 1px solid darkgray;
+    display: grid;
+    overflow-y: scroll;
+}
+.dialogButton {
+    float: left;
+	width: 100%;
+	height: 80px;
+	background: #EEE;
+	cursor: pointer;
+	overflow: hidden;
+}
+.dialogButton:hover {
+	background: #CCC;
+}

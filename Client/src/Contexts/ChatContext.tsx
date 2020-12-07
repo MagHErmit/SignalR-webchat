@@ -12,12 +12,12 @@ type UserMessage = {
 }
 interface IChatContext {
     messages: UserMessage[],
-    sendMessage: (message: string) => Promise<void>
+    sendMessage: (message: string, chatId: number) => Promise<void>
 }
 
 export const ChatContext = createContext<IChatContext>({
     messages: [],
-    sendMessage: (message: string) => {
+    sendMessage: (message: string, chatId: number) => {
         throw new Error("Контекст примера не проинициализирован")
     }
 });
@@ -39,7 +39,6 @@ export const ChatContextProvider: React.FC = ({children}) => {
         }
     }
     
-
     useEffect(() => {
         SignalRManager.instance.connection.on('ReciveFromServerMessage',(message: UserMessage) => {
             message.isMy = currentUserIdentificator === message.userId
@@ -60,8 +59,8 @@ export const ChatContextProvider: React.FC = ({children}) => {
     
     
 
-    const sendMessage = (message: string) => {
-        return SignalRManager.instance.connection.invoke('ReciveMessage', message).catch(() => {alert('Что-то пошло не так...')})
+    const sendMessage = (message: string, chatId: number) => {
+        return SignalRManager.instance.connection.invoke('ReciveMessage', message, chatId).catch(() => {alert('Что-то пошло не так...')})
     }
 
     return <ChatContext.Provider value={{ messages, sendMessage }}>

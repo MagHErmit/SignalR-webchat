@@ -8,7 +8,7 @@ namespace MessageChat.DataRepositories
     {
         public Task<bool> AppendMessageAsync(MessageModel message);
 
-        public Task<IEnumerable<MessageModel>> GetMessagesAsync(int offset, int count);
+        public Task<IEnumerable<MessageModel>> GetMessagesAsync(int offset, int count, int chatId);
 
         public Task<IEnumerable<MessageModel>> GetMessagesByUserIdAsync(string userId);
     }

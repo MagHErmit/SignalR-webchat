@@ -31,7 +31,7 @@ namespace MessageChat.SignalR
             return Task.CompletedTask;
         }
 
-        public async Task ReciveMessage(string text)
+        public async Task ReciveMessage(string text, int chatId)
         {
             var currentUserIdentificator = Context.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var currentUserName = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
@@ -40,6 +40,7 @@ namespace MessageChat.SignalR
             {
                 Text = text,
                 IsMy = false,
+                ChatId = chatId,
                 UserId = currentUserIdentificator,
                 UserName = currentUserName
             };
