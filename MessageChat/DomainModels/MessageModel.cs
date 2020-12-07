@@ -8,15 +8,7 @@ namespace MessageChat.DomainModels
 {
     public class MessageModel
     {
-        public MessageModel() { }
-
-        public MessageModel(UserChatMessageDto message)
-        {
-            UserName = message.UserName;
-            ChatId = message.ChatId;
-            UserId = message.UserId;
-            Text = message.Text;
-        }
+        
         public string UserName { get; set; }
 
         public int ChatId { get; set; } 

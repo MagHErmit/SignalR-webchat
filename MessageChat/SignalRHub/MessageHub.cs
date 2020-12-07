@@ -39,16 +39,18 @@ namespace MessageChat.SignalR
             var currentUserIdentificator = Context.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var currentUserName = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
 
-            var userChatMessage = new UserChatMessageDto
+            var userChatMessage = new MessageModel
             {
-                Text = text,
-                IsMy = false,
+                Text = text,     
                 ChatId = chatId,
                 UserId = currentUserIdentificator,
                 UserName = currentUserName
             };
-            await _messages.AppendMessageAsync(new MessageModel(userChatMessage));
-            await SendMessage(userChatMessage);
+            await _messages.AppendMessageAsync(userChatMessage);
+            await SendMessage(new UserChatMessageDto(userChatMessage)
+            {
+                IsMy = false
+            });
         }
        
         public override Task OnDisconnectedAsync(System.Exception exception)

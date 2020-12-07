@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using MessageChat.DomainModels;
+using System.Runtime.Serialization;
 
 namespace MessageChat.Dto
 {
@@ -8,6 +9,15 @@ namespace MessageChat.Dto
     [DataContract]
     public class UserChatMessageDto
     {
+        public UserChatMessageDto() { }
+
+        public UserChatMessageDto(MessageModel message)
+        {
+            UserName = message.UserName; 
+            ChatId = message.ChatId;
+            UserId = message.UserId;
+            Text = message.Text;
+        }
         /// <summary>
         /// Id пользователя
         /// </summary>
