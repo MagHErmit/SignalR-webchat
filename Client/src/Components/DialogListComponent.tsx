@@ -7,7 +7,7 @@ interface IDialogBlockProps {
 
 
 const DialogBlockComponent: React.FC<IDialogBlockProps> = ({name}) => {
-    return <span><span>{name}</span></span>
+    return <div onClick={() => {alert('robit')}}>{name}</div>
 }
 
 export const DialogListComponent: React.FC = () => {
