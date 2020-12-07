@@ -1,6 +1,6 @@
 class MessagesRepository {
-    public getMessages(): Promise<Response> {
-        return fetch('https://localhost:5001/messages/get', {
+    public getMessages(chatId: number): Promise<Response> {
+        return fetch(`https://localhost:5001/messages/get?count=${20}&chatId=${chatId}`, {
             method: 'GET',
             credentials: 'include',
             headers: {

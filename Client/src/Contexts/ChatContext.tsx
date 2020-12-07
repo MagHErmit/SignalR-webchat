@@ -2,6 +2,7 @@ import React, { useState, createContext, useEffect, useContext} from 'react'
 import SignalRManager from '../SignalR/SignalRManager'
 import { AccountContext } from './AccountContext';
 import messagesRepository from '../repository/MessagesRepository'
+import { DialogListContext } from './DialogListContext';
 
 type UserMessage = {
     userName: string,
@@ -25,10 +26,11 @@ export const ChatContext = createContext<IChatContext>({
 export const ChatContextProvider: React.FC = ({children}) => {
     const [messages, setMessages] = useState<UserMessage[]>([])
     const { currentUserIdentificator, isLogged } = useContext(AccountContext)
-    const getInitMessages = async () => {
+    const { currentDialog } = useContext(DialogListContext)
+    const getInitMessages = async (chatId: number) => {
         let response: any
         try {
-            response = await messagesRepository.getMessages().catch()
+            response = await messagesRepository.getMessages(chatId).catch()
         }
         catch {
             return 
@@ -54,8 +56,8 @@ export const ChatContextProvider: React.FC = ({children}) => {
 
     useEffect(() => {
         if(isLogged)
-            getInitMessages()
-    },[isLogged])
+            getInitMessages(currentDialog)
+    },[isLogged, currentDialog])
     
     
 

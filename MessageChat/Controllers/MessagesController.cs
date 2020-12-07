@@ -21,15 +21,16 @@ namespace MessageChat.Controllers
             _messages = messages;
         }
         [HttpGet("Get")]
-        public async Task<IEnumerable<UserChatMessageDto>> GetMessages()
+        public async Task<IEnumerable<UserChatMessageDto>> GetMessages(int count, int chatId)
         {
             var currentUserId = HttpContext.User.Claims.ElementAt(0).Value;
-            var messages = await _messages.GetMessagesAsync(0, 20, 7);
+            var messages = await _messages.GetMessagesAsync(0, count, chatId);
             return messages
                 .Select(m => new UserChatMessageDto
                 {
                     UserId = m.UserId,
                     UserName = m.UserName,
+                    ChatId = chatId,
                     Text = m.Text,
                     IsMy = currentUserId == m.UserId
                 }).Reverse();
