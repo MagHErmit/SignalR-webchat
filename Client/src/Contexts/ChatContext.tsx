@@ -4,9 +4,10 @@ import { AccountContext } from './AccountContext';
 import messagesRepository from '../repository/MessagesRepository'
 import { DialogListContext } from './DialogListContext';
 
-type UserMessage = {
+export type UserMessage = {
     userName: string,
     userId: string,
+    chatId: number,
     text: string,
     isMy: boolean,
     time: number
@@ -55,7 +56,7 @@ export const ChatContextProvider: React.FC = ({children}) => {
     }, [currentUserIdentificator]) 
 
     useEffect(() => {
-        if(isLogged)
+        if(isLogged && currentDialog !== -1)
             getInitMessages(currentDialog)
     },[isLogged, currentDialog])
     

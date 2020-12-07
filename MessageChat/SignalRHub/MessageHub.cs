@@ -26,8 +26,11 @@ namespace MessageChat.SignalR
 
         public override Task OnConnectedAsync()
         {
-            if(!string.IsNullOrEmpty(Context.UserIdentifier))
+            if (!string.IsNullOrEmpty(Context.UserIdentifier))
+            {
                 _usersIdentificators.AddUser(Context.UserIdentifier);
+            }
+
             return Task.CompletedTask;
         }
 

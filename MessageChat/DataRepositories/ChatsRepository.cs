@@ -25,9 +25,9 @@ namespace MessageChat.DataRepositories
             {
                 return new ChatModel()
                 {
-                    Id = reader.GetInt32(0),
-                    Name = reader.GetString(1),
-                    UserCreatorId = reader.GetString(2)
+                    Id = (int)reader["id"],
+                    Name = (string)reader["chat_name"],
+                    UserCreatorId = (string)reader["user_id_creator"]
                 };
             });
         }

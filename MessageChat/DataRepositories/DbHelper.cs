@@ -28,7 +28,6 @@ namespace MessageChat
                 {
                     command.Parameters.AddRange(parameters.ToArray());
                     SqlDataReader reader = await command.ExecuteReaderAsync();
-
                     if (reader.HasRows)
                     {
                         await reader.ReadAsync();
@@ -70,6 +69,7 @@ namespace MessageChat
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
+                    throw;
                 }
                 return list;
             }
@@ -92,6 +92,7 @@ namespace MessageChat
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
+                    throw;
                 }
                 return res;
             }

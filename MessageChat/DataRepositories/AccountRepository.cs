@@ -30,10 +30,10 @@ namespace MessageChat.DataRepositories
             {
                 return new UserModel()
                 {
-                    Id = reader.GetString(0),
+                    Id = (string)reader["user_id"],
                     Name = userName,
-                    Password = reader.GetString(1),
-                    Email = reader.GetString(2)
+                    Password = (string)reader["user_password"],
+                    Email = (string)reader["user_email"]
                 };
             });
         }

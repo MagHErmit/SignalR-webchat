@@ -41,9 +41,9 @@ namespace MessageChat.DataRepositories
             {
                 return new MessageModel()
                 {
-                    UserId = reader.GetString(0),
-                    UserName = reader.GetString(1),
-                    Text = reader.GetString(2)
+                    UserId = (string)reader["user_id"],
+                    UserName = (string)reader["user_name"],
+                    Text = (string)reader["text"]
                 };
             });
         }
@@ -60,9 +60,9 @@ namespace MessageChat.DataRepositories
             {
                 return new MessageModel()
                 {
-                    UserId = reader.GetString(0),
-                    UserName = reader.GetString(1),
-                    Text = reader.GetString(2)
+                    UserId = (string)reader["user_id"],
+                    UserName = (string)reader["user_name"],
+                    Text = (string)reader["text"]
                 };
             });
         }
