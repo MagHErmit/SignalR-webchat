@@ -38,7 +38,16 @@ export const DialogListContextProvider: React.FC = ({children}) => {
     const createChat = async () => {
         if(!inputChatNameRef.current || !chatDialogNameRef.current)
             return
-        await dialogsRepository.createDialog(inputChatNameRef.current.value)
+        let response: any;
+        try {
+            response = await dialogsRepository.createDialog(inputChatNameRef.current.value)
+        }
+        catch {
+            return
+        }
+        const json = await response.json()
+        console.log(json)
+        setDialogs(existedDialogs => [...existedDialogs, json])
         chatDialogNameRef.current.close()
     }
 

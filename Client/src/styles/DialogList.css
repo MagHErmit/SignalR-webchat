@@ -16,3 +16,6 @@
 .dialogButton:hover {
 	background: #CCC;
 }
+.icon:hover {
+    filter: invert(100%);
+}

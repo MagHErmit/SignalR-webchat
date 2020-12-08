@@ -26,16 +26,17 @@ namespace MessageChat.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ChatModel> CreateChat(string name)
+        public async Task<JsonResult> CreateChat(string name)
         {
             var user_id = HttpContext.User.Claims.ElementAt(0).Value;
-            var id = await _chats.CreateChatAsync((string)name, user_id);
-            return new ChatModel()
+            var id = await _chats.CreateChatAsync(name, user_id);
+            return new JsonResult(new ChatModel()
             {
                 Id = id,
-                Name = (string)name,
+                Name = name,
                 UserCreatorId = user_id
-            };
+            });
+            
         }
     }
 }
