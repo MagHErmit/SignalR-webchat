@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MessageChat.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("dialogs")]
     public class ChatsController : ControllerBase
     {
@@ -24,6 +24,18 @@ namespace MessageChat.Controllers
         {
            return await _chats.GetChatsByUserIdAsync(HttpContext.User.Claims.ToArray()[0].Value);
         }
-        
+
+        [HttpPost("Create")]
+        public async Task<ChatModel> CreateChat(string name)
+        {
+            var user_id = HttpContext.User.Claims.ElementAt(0).Value;
+            var id = await _chats.CreateChatAsync((string)name, user_id);
+            return new ChatModel()
+            {
+                Id = id,
+                Name = (string)name,
+                UserCreatorId = user_id
+            };
+        }
     }
 }

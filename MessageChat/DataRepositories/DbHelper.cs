@@ -98,6 +98,30 @@ namespace MessageChat
             }
         }
 
+        public async Task<object> ExecuteScalarProcedureAsync(string procedureName, List<SqlParameter> parameters)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                SqlCommand command = new SqlCommand(procedureName, connection);
+                command.CommandType = CommandType.StoredProcedure;
+                object res;
+                try
+                {
+                    command.Parameters.AddRange(parameters.ToArray());
+                    res = await command.ExecuteScalarAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    throw;
+                }
+                return res;
+            }
+        }
+
     }
 }
 

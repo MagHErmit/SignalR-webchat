@@ -1,5 +1,6 @@
 ﻿using MessageChat.DataRepositories.Inerfaces;
 using MessageChat.DomainModels;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -30,6 +31,18 @@ namespace MessageChat.DataRepositories
                     UserCreatorId = (string)reader["user_id_creator"]
                 };
             });
+        }
+
+        public async Task<int> CreateChatAsync(string name, string userId)
+        {
+            string sqlExpression = "sp_AddChat";
+            var paramList = new List<SqlParameter>()
+            {
+                new SqlParameter() { ParameterName = "@name", Value = name },
+                new SqlParameter() { ParameterName = "@creator", Value = userId },
+                new SqlParameter() { ParameterName = "@created_at", Value = DateTime.Now}
+            };
+            return (int)await _helper.ExecuteScalarProcedureAsync(sqlExpression, paramList);
         }
     }
 }

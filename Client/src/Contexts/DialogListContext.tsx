@@ -41,15 +41,11 @@ export const DialogListContextProvider: React.FC = ({children}) => {
             return
         }
         if(response.status === 200) {
-            const json = await response.json();
+            const json = await response.json()
             setDialogs(json)
         }
     }
-
-    useEffect(() => {
-        console.log(currentDialog)
-    }, [currentDialog])
-
+    
     useEffect(() => {
         if(isLogged)
             getDialogs()

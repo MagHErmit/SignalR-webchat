@@ -9,5 +9,7 @@ namespace MessageChat.DataRepositories.Inerfaces
     public interface IChatsRepository
     {
         public Task<IEnumerable<ChatModel>> GetChatsByUserIdAsync(string userId);
+
+        public Task<int> CreateChatAsync(string name, string userId);
     }
 }
