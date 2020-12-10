@@ -2,6 +2,8 @@ import { Button, TextField } from "@material-ui/core";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react"
 import dialogsRepository from "../repository/DialogsRepository";
 import { AccountContext } from "./AccountContext"
+import { UserMessage } from "./ChatContext"
+import * as Collections from 'typescript-collections'
 
 type Dialog = {
     id: number,
@@ -12,6 +14,7 @@ type Dialog = {
 interface IDialogListContext {
     dialogs: Dialog[],
     currentDialog: number,
+    dictChats: Collections.Dictionary<number, UserMessage[]>,
     setCurrentDialog: (chatId: number) => void
     setIschatDialogNameOpen: (isDialogOpen: boolean) => void
 }
@@ -20,6 +23,7 @@ interface IDialogListContext {
 export const DialogListContext = createContext<IDialogListContext>({
     dialogs: [],
     currentDialog: -1,
+    dictChats: new Collections.Dictionary<number, UserMessage[]>(),
     setCurrentDialog: (chatId: number) => {
         throw new Error("Контекст примера не проинициализирован")
     },
@@ -34,6 +38,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
     const [currentDialog, setCurrentDialogInternal] = useState(-1)
     const chatDialogNameRef = useRef<HTMLDialogElement>(null)
     const inputChatNameRef = useRef<HTMLInputElement>(null)
+    const { dictChats } = useContext(DialogListContext)
 
     const createChat = async () => {
         if(!inputChatNameRef.current || !chatDialogNameRef.current)
@@ -46,7 +51,6 @@ export const DialogListContextProvider: React.FC = ({children}) => {
             return
         }
         const json = await response.json()
-        console.log(json)
         setDialogs(existedDialogs => [...existedDialogs, json])
         chatDialogNameRef.current.close()
     }
@@ -78,6 +82,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
         if(response.status === 200) {
             const json = await response.json()
             setDialogs(json)
+            json.forEach((e: { id: number; }) => {dictChats.setValue(e.id, [])})
         }
     }
     
@@ -88,7 +93,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
 
 
 
-    return <DialogListContext.Provider value={{dialogs, currentDialog, setCurrentDialog, setIschatDialogNameOpen}}>
+    return <DialogListContext.Provider value={{dialogs, currentDialog, setCurrentDialog, setIschatDialogNameOpen, dictChats}}>
         <dialog ref={chatDialogNameRef} className='login-dialog'>
                 <div className='login-dialog-header'>
                     <span className='login-dialog-header-text'>Создание чата</span>                    

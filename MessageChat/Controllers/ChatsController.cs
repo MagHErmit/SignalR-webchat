@@ -22,20 +22,21 @@ namespace MessageChat.Controllers
         [HttpGet("Get")]
         public async Task<IEnumerable<ChatModel>> GetDialogs()
         {
-           return await _chats.GetChatsByUserIdAsync(HttpContext.User.Claims.ToArray()[0].Value);
+           return await _chats.GetChatsByUserIdAsync(HttpContext.User.Claims.ElementAt(0).Value);
         }
 
         [HttpPost("Create")]
-        public async Task<JsonResult> CreateChat(string name)
+        public async Task<ChatModel> CreateChat(string name)
         {
             var user_id = HttpContext.User.Claims.ElementAt(0).Value;
             var id = await _chats.CreateChatAsync(name, user_id);
-            return new JsonResult(new ChatModel()
+            return new ChatModel()
             {
                 Id = id,
                 Name = name,
                 UserCreatorId = user_id
-            });
+            };
+            
             
         }
     }

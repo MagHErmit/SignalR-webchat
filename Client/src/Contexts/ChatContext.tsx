@@ -4,6 +4,7 @@ import { AccountContext } from './AccountContext';
 import messagesRepository from '../repository/MessagesRepository'
 import { DialogListContext } from './DialogListContext';
 
+
 export type UserMessage = {
     userName: string,
     userId: string,
@@ -27,7 +28,8 @@ export const ChatContext = createContext<IChatContext>({
 export const ChatContextProvider: React.FC = ({children}) => {
     const [messages, setMessages] = useState<UserMessage[]>([])
     const { currentUserIdentificator, isLogged } = useContext(AccountContext)
-    const { currentDialog } = useContext(DialogListContext)
+    const { currentDialog, dictChats } = useContext(DialogListContext)
+
     const getInitMessages = async (chatId: number) => {
         let response: any
         try {
