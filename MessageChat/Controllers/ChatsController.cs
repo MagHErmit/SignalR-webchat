@@ -15,9 +15,9 @@ namespace MessageChat.Controllers
     public class ChatsController : ControllerBase
     {
         private readonly IChatsRepository _chats;
-        public ChatsController(IChatsRepository messages)
+        public ChatsController(IChatsRepository chats)
         {
-            _chats = messages;
+            _chats = chats;
         }
         [HttpGet("Get")]
         public async Task<IEnumerable<ChatModel>> GetDialogs()
@@ -36,8 +36,6 @@ namespace MessageChat.Controllers
                 Name = name,
                 UserCreatorId = user_id
             };
-            
-            
         }
     }
 }

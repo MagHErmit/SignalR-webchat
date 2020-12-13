@@ -14,20 +14,28 @@ type Dialog = {
 interface IDialogListContext {
     dialogs: Dialog[],
     currentDialog: number,
+    currentChat: UserMessage[],
     dictChats: Collections.Dictionary<number, UserMessage[]>,
+    loaded: boolean,
     setCurrentDialog: (chatId: number) => void
     setIschatDialogNameOpen: (isDialogOpen: boolean) => void
+    appendMessage: (message: UserMessage) => void
 }
 
 
 export const DialogListContext = createContext<IDialogListContext>({
     dialogs: [],
     currentDialog: -1,
+    currentChat: [],
+    loaded: false,
     dictChats: new Collections.Dictionary<number, UserMessage[]>(),
     setCurrentDialog: (chatId: number) => {
         throw new Error("Контекст примера не проинициализирован")
     },
     setIschatDialogNameOpen: (isDialogOpen: boolean) => {
+        throw new Error("Контекст диалогов не проинициализирован")
+    },
+    appendMessage: (message: UserMessage) => {
         throw new Error("Контекст диалогов не проинициализирован")
     }
 });
@@ -39,6 +47,9 @@ export const DialogListContextProvider: React.FC = ({children}) => {
     const chatDialogNameRef = useRef<HTMLDialogElement>(null)
     const inputChatNameRef = useRef<HTMLInputElement>(null)
     const { dictChats } = useContext(DialogListContext)
+    const [currentChat, setCurrentChatInternal] = useState<UserMessage[]>([])
+
+    const [loaded, setter] = useState(false)
 
     const createChat = async () => {
         if(!inputChatNameRef.current || !chatDialogNameRef.current)
@@ -52,6 +63,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
         }
         const json = await response.json()
         setDialogs(existedDialogs => [...existedDialogs, json])
+        dictChats.setValue(json.id, [])
         chatDialogNameRef.current.close()
     }
 
@@ -69,6 +81,11 @@ export const DialogListContextProvider: React.FC = ({children}) => {
 
     const setCurrentDialog = (chatId: number) => {
         setCurrentDialogInternal(chatId)
+        setCurrentChatInternal(dictChats.getValue(chatId) as UserMessage[])
+    }
+
+    const appendMessage = (message: UserMessage) => {
+        setCurrentChatInternal(existedMessages => [...existedMessages, message])
     }
 
     const getDialogs = async () => {
@@ -84,7 +101,12 @@ export const DialogListContextProvider: React.FC = ({children}) => {
             setDialogs(json)
             json.forEach((e: { id: number; }) => {dictChats.setValue(e.id, [])})
         }
+        setter(true)
     }
+
+    useEffect(() => {
+        console.log(currentDialog)
+    }, [currentDialog])
     
     useEffect(() => {
         if(isLogged)
@@ -93,7 +115,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
 
 
 
-    return <DialogListContext.Provider value={{dialogs, currentDialog, setCurrentDialog, setIschatDialogNameOpen, dictChats}}>
+    return <DialogListContext.Provider value={{dialogs, currentDialog, currentChat, loaded, appendMessage, setCurrentDialog, setIschatDialogNameOpen, dictChats}}>
         <dialog ref={chatDialogNameRef} className='login-dialog'>
                 <div className='login-dialog-header'>
                     <span className='login-dialog-header-text'>Создание чата</span>                    

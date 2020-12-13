@@ -28,9 +28,10 @@ export const ChatContext = createContext<IChatContext>({
 export const ChatContextProvider: React.FC = ({children}) => {
     const [messages, setMessages] = useState<UserMessage[]>([])
     const { currentUserIdentificator, isLogged } = useContext(AccountContext)
-    const { currentDialog, dictChats } = useContext(DialogListContext)
+    const { dictChats, loaded, appendMessage, currentDialog } = useContext(DialogListContext)
 
     const getInitMessages = async (chatId: number) => {
+        
         let response: any
         try {
             response = await messagesRepository.getMessages(chatId).catch()
@@ -40,27 +41,39 @@ export const ChatContextProvider: React.FC = ({children}) => {
         }
         if(response.status === 200) {
             const json = await response.json();
-            setMessages(json)
+            return json
         }
     }
-    
+
+    const addMessage = (arr: UserMessage[], m: UserMessage) => {
+        arr.push(m)
+    }
+
     useEffect(() => {
         SignalRManager.instance.connection.on('ReciveFromServerMessage',(message: UserMessage) => {
             message.isMy = currentUserIdentificator === message.userId
             message.time = new Date().getTime()
-
-            setMessages(existedMessages => [...existedMessages, message])
+            if(message.chatId === currentDialog)
+                appendMessage(message)
+            else
+                addMessage(dictChats.getValue(message.chatId) as UserMessage[], message)
         })
         
         return () => {
             SignalRManager.instance.connection.off('ReciveFromServerMessage')
         }
-    }, [currentUserIdentificator]) 
+    }, [currentUserIdentificator, currentDialog]) 
 
     useEffect(() => {
-        if(isLogged && currentDialog !== -1)
-            getInitMessages(currentDialog)
-    },[isLogged, currentDialog])
+        if(isLogged && loaded) {
+            dictChats.forEach((k, arr) => {
+                getInitMessages(k).then(res => {
+                    dictChats.setValue(k, res)
+                })
+            })
+        }
+        console.log(dictChats)
+    },[isLogged, loaded])
     
     
 
