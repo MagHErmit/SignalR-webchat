@@ -16,8 +16,9 @@ interface IDialogListContext {
     currentDialog: number,
     dictChats: Collections.Dictionary<number, UserMessage[]>,
     loaded: boolean,
-    setCurrentDialog: (chatId: number) => void
-    setIschatDialogNameOpen: (isDialogOpen: boolean) => void
+    setCurrentDialog: (chatId: number) => void,
+    setIschatDialogNameOpen: (isDialogOpen: boolean) => void,
+    setIsAddUserDialogOpen: (isDialogOpen: boolean) => void,
 }
 
 
@@ -31,6 +32,9 @@ export const DialogListContext = createContext<IDialogListContext>({
     },
     setIschatDialogNameOpen: (isDialogOpen: boolean) => {
         throw new Error("Контекст диалогов не проинициализирован")
+    },
+    setIsAddUserDialogOpen: (isDialogOpen: boolean) => {
+        throw new Error("Контекст диалогов не проинициализирован")
     }
 });
 
@@ -40,6 +44,10 @@ export const DialogListContextProvider: React.FC = ({children}) => {
     const [currentDialog, setCurrentDialogInternal] = useState(-1)
     const chatDialogNameRef = useRef<HTMLDialogElement>(null)
     const inputChatNameRef = useRef<HTMLInputElement>(null)
+
+    const addUserToChatDialogNameRef = useRef<HTMLDialogElement>(null)
+    const inputUserChatNameRef = useRef<HTMLInputElement>(null)
+
     const { dictChats } = useContext(DialogListContext)
 
     const [loaded, setLoadedStatus] = useState(false)
@@ -72,6 +80,17 @@ export const DialogListContextProvider: React.FC = ({children}) => {
         }
     }
 
+    const setIsAddUserDialogOpen = (isDiaolgOpen: boolean) => {
+        if(!addUserToChatDialogNameRef.current || !inputUserChatNameRef.current || currentDialog === -1)
+            return
+        if(isDiaolgOpen) {
+            addUserToChatDialogNameRef.current.showModal()
+        }
+        else {
+            addUserToChatDialogNameRef.current.close()
+        }
+    }
+
     const setCurrentDialog = (chatId: number) => {
         setCurrentDialogInternal(chatId)
     }
@@ -92,10 +111,24 @@ export const DialogListContextProvider: React.FC = ({children}) => {
         setLoadedStatus(true)
     }
 
-    useEffect(() => {
-        console.log(currentDialog)
-    }, [currentDialog])
-    
+    const addUserToChat = async () => {
+        if(inputUserChatNameRef.current !== null && addUserToChatDialogNameRef.current !== null) {
+            let response: any
+            try {
+                response = await dialogsRepository.addUserToDialog(inputUserChatNameRef.current.value, currentDialog).catch()
+            }
+            catch {
+                return false
+            }
+            if(response.status === 200) {
+                addUserToChatDialogNameRef.current.close()
+                return true
+                
+            }
+        }
+        return false
+    }
+
     useEffect(() => {
         if(isLogged)
             getDialogs()
@@ -103,7 +136,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
 
 
 
-    return <DialogListContext.Provider value={{dialogs, currentDialog, loaded, setCurrentDialog, setIschatDialogNameOpen, dictChats}}>
+    return <DialogListContext.Provider value={{dialogs, currentDialog, loaded, setCurrentDialog, setIschatDialogNameOpen, setIsAddUserDialogOpen, dictChats}}>
         <dialog ref={chatDialogNameRef} className='login-dialog'>
                 <div className='login-dialog-header'>
                     <span className='login-dialog-header-text'>Создание чата</span>                    
@@ -121,6 +154,23 @@ export const DialogListContextProvider: React.FC = ({children}) => {
                     </Button>
                 </div>
             </dialog>
+        <dialog ref={addUserToChatDialogNameRef} className='login-dialog'>
+                <div className='login-dialog-header'>
+                    <span className='login-dialog-header-text'>Добавить пользователя</span>                    
+                </div>
+                <div className='login-dialog-body'>
+                    <TextField inputRef={inputUserChatNameRef} label='Введите имя пользователя' fullWidth/>
+                    <label style={{color: 'red'}}></label>
+                </div>
+                <div className='login-dialog-footer'>
+                    <Button onClick={() => {setIsAddUserDialogOpen(false)}} className='login-dialog-close-button'>
+                        Закрыть
+                    </Button>
+                    <Button onClick={() => {addUserToChat()}} className='login-dialog-send-button' color="primary">
+                        Создать
+                    </Button>
+                </div>
+        </dialog>
         {children}
     </DialogListContext.Provider>
 }

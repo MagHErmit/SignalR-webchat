@@ -18,6 +18,16 @@ class DialogsRepository {
             }
         })
     }
+
+    public addUserToDialog(userName: string, chatId: number): Promise<Response> {
+        return fetch(`https://localhost:5001/dialogs/addUserToChat?userName=${userName}&chatId=${chatId}`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-type' : 'application/json'
+            }
+        })
+    }
 }
 
 const dialogsRepository = new DialogsRepository()

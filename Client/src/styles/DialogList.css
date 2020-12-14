@@ -5,6 +5,11 @@
     display: flexbox;
     overflow-y: scroll;
 }
+.buttons-panel {
+    display: flex;
+}
+    
+
 .dialogButton {
     float: left;
 	width: 100%;

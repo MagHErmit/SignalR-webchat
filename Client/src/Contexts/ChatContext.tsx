@@ -63,19 +63,14 @@ export const ChatContextProvider: React.FC = ({children}) => {
             SignalRManager.instance.connection.off('ReciveFromServerMessage')
         }
     }, [currentUserIdentificator, currentDialog]) 
-
+    
     useEffect(() => {
         if(isLogged && loaded) {
-            dictChats.forEach((k, arr) => {
-                getInitMessages(k).then(res => {
-                    dictChats.setValue(k, res)
-                })
-            })
+            updateMessagesAsync()
         }
-        console.log(dictChats)
     },[isLogged, loaded])
 
-    const updateMessages = async () => {
+    const updateMessagesAsync = async () => {
         dictChats.forEach(async (k, arr) => {
             await getInitMessages(k).then(res => {
                 dictChats.setValue(k, res)
@@ -85,11 +80,11 @@ export const ChatContextProvider: React.FC = ({children}) => {
     }
     
     useEffect(() => {
-        const obertka = async () => {
-            await updateMessages()
+        const updateMessages = async () => {
+            await updateMessagesAsync()
         }
         if(status === ConnectionStatus.Alive) {
-            obertka()
+            updateMessages()
             if(currentDialog !== -1)
                 setMessages((dictChats.getValue(currentDialog) as UserMessage[]))
         }

@@ -11,5 +11,7 @@ namespace MessageChat.DataRepositories.Inerfaces
         public Task<IEnumerable<ChatModel>> GetChatsByUserIdAsync(string userId);
 
         public Task<int> CreateChatAsync(string name, string userId);
+
+        public Task<bool> AddUserToChatAsync(string userName, int chatId);
     }
 }

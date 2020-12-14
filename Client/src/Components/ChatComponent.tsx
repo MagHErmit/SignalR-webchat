@@ -28,7 +28,7 @@ const ChatMessageListComponent: React.FC = () => {
     return (
         <div className='message-list'>
             {
-               messages.map((m) => <ChatMessagesBlockComponent key={m.time} isMy={m.isMy} userName={m.userName} text={m.text}/>)
+            messages.map((m) => <ChatMessagesBlockComponent key={m.time} isMy={m.isMy} userName={m.userName} text={m.text}/>)
             }
             <div ref={bottomRef}> </div>
         </div>

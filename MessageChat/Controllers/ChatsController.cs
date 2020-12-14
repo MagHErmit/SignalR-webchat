@@ -37,5 +37,11 @@ namespace MessageChat.Controllers
                 UserCreatorId = user_id
             };
         }
+
+        [HttpPost("addUserToChat")]
+        public async Task<bool> AddUserToChatAsync(string userName, int chatId)
+        {
+            return await _chats.AddUserToChatAsync(userName, chatId);
+        }
     }
 }

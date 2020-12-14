@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MessageChat.DataRepositories;
-using MessageChat.AuthorizedAccountRepository;
 using Microsoft.Extensions.Configuration;
 using MessageChat.DataRepositories.Inerfaces;
 
@@ -25,7 +24,6 @@ namespace MessageChat
         {
             services.Configure<ConnectionSetting>(Configuration.GetSection("ConnectionStrings"));
             services.AddSingleton<MessageHub>();
-            services.AddSingleton<IAuthorizedUsersRepository, AuthorizedUsers>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
             services.AddSingleton<IMessageRepository, MessageRepository>();
             services.AddSingleton<IChatsRepository, ChatsRepository>();

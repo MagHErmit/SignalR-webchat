@@ -44,5 +44,16 @@ namespace MessageChat.DataRepositories
             };
             return (int)await _helper.ExecuteScalarProcedureAsync(sqlExpression, paramList);
         }
+
+        public async Task<bool> AddUserToChatAsync(string userName, int chatId)
+        {
+            string sqlExpression = "sp_AddUserToChat";
+            var paramlist = new List<SqlParameter>()
+            {
+                new SqlParameter() { ParameterName = "@user", Value = userName },
+                new SqlParameter() { ParameterName = "@chat_id", Value = chatId }
+            };
+            return await _helper.ExecuteNonQueryProcedureAsync(sqlExpression, paramlist) > 0;
+        }
     }
 }

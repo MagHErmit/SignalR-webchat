@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using MessageChat.AuthorizedAccountRepository;
 using MessageChat.DataRepositories;
 using MessageChat.DataRepositories.Inerfaces;
 using MessageChat.DomainModels;
@@ -51,6 +50,15 @@ namespace MessageChat.SignalR
                 IsMy = false
             });
         }
+        
+        public async override Task OnDisconnectedAsync(Exception exp)
+        {
+            foreach (var c in await _chats.GetChatsByUserIdAsync(Context.UserIdentifier))
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString());
+            }
+        }
+
         private async Task SendMessage(UserChatMessageDto message)
         {
             await Clients.Group(message.ChatId.ToString()).SendAsync("ReciveFromServerMessage", message);
