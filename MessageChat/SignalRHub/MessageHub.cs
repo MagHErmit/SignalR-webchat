@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using MessageChat.AuthorizedAccountRepository;
 using MessageChat.DataRepositories;
+using MessageChat.DataRepositories.Inerfaces;
 using MessageChat.DomainModels;
 using MessageChat.Dto;
 using Microsoft.AspNetCore.Authorization;
@@ -15,23 +16,21 @@ namespace MessageChat.SignalR
     [Authorize]
     public class MessageHub : Hub
     {
-        private readonly IAuthorizedUsersRepository _usersIdentificators;
+        private readonly IChatsRepository _chats;
         private readonly IMessageRepository _messages;
 
-        public MessageHub(IAuthorizedUsersRepository list, IMessageRepository messages)
+        public MessageHub(IMessageRepository messages, IChatsRepository chats)
         {
-            _usersIdentificators = list;
             _messages = messages;
+            _chats = chats;
         }
 
-        public override Task OnConnectedAsync()
+        public async override Task OnConnectedAsync()
         {
-            if (!string.IsNullOrEmpty(Context.UserIdentifier))
+            foreach(var c in await _chats.GetChatsByUserIdAsync(Context.UserIdentifier))
             {
-                _usersIdentificators.AddUser(Context.UserIdentifier);
+                await Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString());
             }
-
-            return Task.CompletedTask;
         }
 
         public async Task ReciveMessage(string text, int chatId)
@@ -52,17 +51,9 @@ namespace MessageChat.SignalR
                 IsMy = false
             });
         }
-       
-        public override Task OnDisconnectedAsync(System.Exception exception)
-        {
-            if (!string.IsNullOrEmpty(Context.UserIdentifier))
-                _usersIdentificators.RemoveUser(Context.UserIdentifier);
-            return Task.CompletedTask;
-        }
-
         private async Task SendMessage(UserChatMessageDto message)
         {
-            await Clients.Users(_usersIdentificators.ToList()).SendAsync("ReciveFromServerMessage", message);
+            await Clients.Group(message.ChatId.ToString()).SendAsync("ReciveFromServerMessage", message);
         }
     }
 }
