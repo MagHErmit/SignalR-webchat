@@ -3,6 +3,7 @@ import SignalRManager from '../SignalR/SignalRManager'
 import { AccountContext } from './AccountContext';
 import messagesRepository from '../repository/MessagesRepository'
 import { DialogListContext } from './DialogListContext';
+import { ConnectionContext, ConnectionStatus } from './ConnectionContext';
 
 
 export type UserMessage = {
@@ -28,10 +29,10 @@ export const ChatContext = createContext<IChatContext>({
 export const ChatContextProvider: React.FC = ({children}) => {
     const [messages, setMessages] = useState<UserMessage[]>([])
     const { currentUserIdentificator, isLogged } = useContext(AccountContext)
-    const { dictChats, loaded, appendMessage, currentDialog } = useContext(DialogListContext)
+    const { dictChats, loaded, currentDialog, setCurrentDialog } = useContext(DialogListContext)
+    const { status } = useContext(ConnectionContext)
 
     const getInitMessages = async (chatId: number) => {
-        
         let response: any
         try {
             response = await messagesRepository.getMessages(chatId).catch()
@@ -54,9 +55,8 @@ export const ChatContextProvider: React.FC = ({children}) => {
             message.isMy = currentUserIdentificator === message.userId
             message.time = new Date().getTime()
             if(message.chatId === currentDialog)
-                appendMessage(message)
-            else
-                addMessage(dictChats.getValue(message.chatId) as UserMessage[], message)
+                setMessages(existedMessages => [...existedMessages, message])
+            addMessage(dictChats.getValue(message.chatId) as UserMessage[], message)
         })
         
         return () => {
@@ -74,7 +74,31 @@ export const ChatContextProvider: React.FC = ({children}) => {
         }
         console.log(dictChats)
     },[isLogged, loaded])
+
+    const updateMessages = async () => {
+        dictChats.forEach(async (k, arr) => {
+            await getInitMessages(k).then(res => {
+                dictChats.setValue(k, res)
+            })
+        })
+        
+    }
     
+    useEffect(() => {
+        const obertka = async () => {
+            await updateMessages()
+        }
+        if(status === ConnectionStatus.Alive) {
+            obertka()
+            if(currentDialog !== -1)
+                setMessages((dictChats.getValue(currentDialog) as UserMessage[]))
+        }
+    },[status])
+
+    useEffect(() => {
+        if(currentDialog !== -1)
+            setMessages(dictChats.getValue(currentDialog) as UserMessage[])
+    }, [currentDialog])
     
 
     const sendMessage = (message: string, chatId: number) => {
