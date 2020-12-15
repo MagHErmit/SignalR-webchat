@@ -69,7 +69,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
     }
 
     const setIschatDialogNameOpen = (isDialogOpen: boolean) => {
-        if (!chatDialogNameRef.current)
+        if (!chatDialogNameRef.current || !isLogged)
             return
 
         if (isDialogOpen) {
