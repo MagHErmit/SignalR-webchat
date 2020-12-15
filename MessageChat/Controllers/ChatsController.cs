@@ -41,6 +41,8 @@ namespace MessageChat.Controllers
         [HttpPost("addUserToChat")]
         public async Task<bool> AddUserToChatAsync(string userName, int chatId)
         {
+            if (await _chats.IsUserAlreadyInChatAsync(userName, chatId))
+                return false;
             return await _chats.AddUserToChatAsync(userName, chatId);
         }
     }

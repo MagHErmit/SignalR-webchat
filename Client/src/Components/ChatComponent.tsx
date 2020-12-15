@@ -109,7 +109,7 @@ const ChatInputBlockComponent: React.FC = () => {
     }, [currentUserName])
     return (
         <div className='input-block'>
-            <textarea ref={textAreaRef} className='text-input' placeholder={'Введите сообщение'} rows={1} onKeyDown={(event) => onEnter(event)} disabled={status !== ConnectionStatus.Alive}/>
+            <textarea ref={textAreaRef} className='text-input' placeholder={'Введите сообщение'} rows={1} onKeyDown={(event) => onEnter(event)} disabled={status !== ConnectionStatus.Alive || currentDialog === -1}/>
         </div>
     )
 }

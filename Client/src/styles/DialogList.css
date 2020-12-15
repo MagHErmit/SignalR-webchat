@@ -13,13 +13,16 @@
 .dialogButton {
     float: left;
 	width: 100%;
-	height: 80px;
+	height: 60px;
     background: #EEE;
 	cursor: pointer;
-	overflow: hidden;
 }
 .dialogButton:hover {
 	background: #CCC;
+}
+.icon {
+    width: 100%;
+	height: 40px;
 }
 .icon:hover {
     filter: invert(100%);

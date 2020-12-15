@@ -167,7 +167,7 @@ export const DialogListContextProvider: React.FC = ({children}) => {
                         Закрыть
                     </Button>
                     <Button onClick={() => {addUserToChat()}} className='login-dialog-send-button' color="primary">
-                        Создать
+                        Добавить
                     </Button>
                 </div>
         </dialog>

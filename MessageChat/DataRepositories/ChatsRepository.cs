@@ -3,6 +3,7 @@ using MessageChat.DomainModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MessageChat.DataRepositories
@@ -14,6 +15,28 @@ namespace MessageChat.DataRepositories
         public ChatsRepository(DbHelper helper)
         {
             _helper = helper;
+        }
+
+        public async Task<bool> IsUserAlreadyInChatAsync(string userName, int chatId)
+        {
+            string sqlExpression = "sp_GetUserCreditals";
+            var paramList = new List<SqlParameter>()
+            {
+                new SqlParameter { ParameterName = "@name", Value = userName }
+            };
+            var res = await GetChatsByUserIdAsync(
+            (await _helper.ExecuteReaderProcedureAsync(sqlExpression, paramList, reader =>
+            {
+                return new UserModel()
+                {
+                    Id = (string)reader["user_id"],
+                    Name = userName,
+                    Password = (string)reader["user_password"],
+                    Email = (string)reader["user_email"]
+                };
+            })).Id);
+
+            return res.Where(c => c.Id == chatId).Count() > 0;
         }
         public async Task<IEnumerable<ChatModel>> GetChatsByUserIdAsync(string userId)
         {

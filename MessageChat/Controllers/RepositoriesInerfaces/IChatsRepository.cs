@@ -13,5 +13,7 @@ namespace MessageChat.DataRepositories.Inerfaces
         public Task<int> CreateChatAsync(string name, string userId);
 
         public Task<bool> AddUserToChatAsync(string userName, int chatId);
+
+        public Task<bool> IsUserAlreadyInChatAsync(string userName, int chatId);
     }
 }
